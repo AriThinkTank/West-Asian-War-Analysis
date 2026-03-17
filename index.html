@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Macro-Impact: Hormuz Blockade 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --surface-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --critical: #ef4444; /* Red */
+            --high: #f97316;    /* Orange */
+            --moderate: #eab308; /* Yellow */
+            --accent: #2563eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: var(--surface-color);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        button {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--surface-color);
+            border-color: var(--accent);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid var(--border-color);
+        }
+
+        .metric-card.critical { border-top-color: var(--critical); }
+        .metric-card.high { border-top-color: var(--high); }
+        .metric-card.moderate { border-top-color: var(--moderate); }
+
+        .metric-title { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .metric-value { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .insight-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .analysis-section {
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 30px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+        .bg-critical { background-color: var(--critical); }
+        .bg-high { background-color: var(--high); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>Impact Dashboard: Hormuz Blockade 2026</h1>
+            <p style="color: var(--text-muted);">Dynamic complexity analysis of India's macroeconomic & supply chain exposure.</p>
+        </div>
+        <div class="controls">
+            <div>
+                <label for="daysSlider"><strong>Time Horizon: <span id="daysLabel">0</span> Days</strong></label><br>
+                <input type="range" id="daysSlider" min="0" max="60" step="15" value="0" style="width: 200px;">
+            </div>
+            <button id="refreshBtn">↻ Refresh Data</button>
+        </div>
+    </header>
+
+    <div class="metrics-grid">
+        <div class="metric-card critical">
+            <div class="metric-title">Domestic LPG Deficit</div>
+            <div class="metric-value" id="val-lpg">0%</div>
+            <div class="insight-text">🔴 Critical: Tracks depletion of buffer stocks and rationing severity.</div>
+        </div>
+        <div class="metric-card critical">
+            <div class="metric-title">Est. Food Inflation</div>
+            <div class="metric-value" id="val-inflation">5.5%</div>
+            <div class="insight-text">🔴 Critical: Driven by trapped urea/fertilizer imports from the Gulf.</div>
+        </div>
+        <div class="metric-card high">
+            <div class="metric-title">Forex Reserves</div>
+            <div class="metric-value" id="val-forex">$600B</div>
+            <div class="insight-text">🟠 High: RBI interventions to manage INR volatility vs USD.</div>
+        </div>
+        <div class="metric-card high">
+            <div class="metric-title">Stranded Indian Vessels</div>
+            <div class="metric-value" id="val-ships">28</div>
+            <div class="insight-text">🟠 High: Commercial vessels trapped in the Persian Gulf.</div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-container">
+            <h3>LPG Supply vs Demand (Million Tonnes)</h3>
+            <canvas id="lpgChart"></canvas>
+            <div class="insight-text">
+                <strong>Insight:</strong> India lacks strategic LPG reserves. As the timeline extends past 30 days, domestic output cannot match demand, forcing immediate industrial load-shedding and household rationing.
+            </div>
+        </div>
+        <div class="chart-container">
+            <h3>Global Price Spikes (Urea & Freight)</h3>
+            <canvas id="priceChart"></canvas>
+            <div class="insight-text">
+                <strong>Insight:</strong> Rerouting via the Cape of Good Hope adds 14-20 days. Freight rates triple, and Urea prices spike drastically, threatening localized fertilizer shortages ahead of sowing seasons.
+            </div>
+        </div>
+    </div>
+
+    <div class="analysis-section">
+        <h2>🧩 Complexity & Policy Analysis</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div>
+                <h3>Sector Chokepoints</h3>
+                <ul>
+                    <li><strong>Energy <span class="badge bg-critical">Critical</span>:</strong> 90% import reliance on ME crude; 25% of LNG under force majeure.</li>
+                    <li><strong>Agriculture <span class="badge bg-critical">Critical</span>:</strong> Ammonia & sulfur entrapment risking Q3 crop yields.</li>
+                    <li><strong>Pharma & Tech <span class="badge bg-high">High</span>:</strong> Qatar helium shortages halting MRI operations and semiconductor fabrication; polyethylene shortages raising packaging costs.</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Policy Recommendations</h3>
+                <ol>
+                    <li><strong>Fast-Track Strategic LPG Reserves:</strong> Allocate emergency capital for underground salt-cavern storage to mirror crude reserves.</li>
+                    <li><strong>Agri-Subsidy Restructuring:</strong> Shift to direct cash transfers to shield farmers from the impending $600/tonne Urea spike.</li>
+                    <li><strong>Diplomatic Fast-Lanes:</strong> Utilize backchannels to formalize a "white-list" of essential Indian cargo exempt from asymmetric targeting.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Data Definitions ---
+    const baseData = {
+        0:  { lpg: "0%", inflation: "5.5%", forex: "$600B", ships: 28, urea: 450, freight: 1000, lpgSupply: 2.5, lpgDemand: 2.5 },
+        15: { lpg: "5%", inflation: "6.2%", forex: "$590B", ships: 35, urea: 520, freight: 2500, lpgSupply: 2.3, lpgDemand: 2.6 },
+        30: { lpg: "15%", inflation: "7.8%", forex: "$575B", ships: 42, urea: 600, freight: 4000, lpgSupply: 1.9, lpgDemand: 2.7 },
+        60: { lpg: "30%", inflation: "10.1%", forex: "$550B", ships: 55, urea: 650, freight: 5500, lpgSupply: 1.5, lpgDemand: 2.8 }
+    };
+
+    let currentNoise = 0; // For the refresh button effect
+
+    // --- Chart Setup ---
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+
+    const lpgCtx = document.getElementById('lpgChart').getContext('2d');
+    const lpgChart = new Chart(lpgCtx, {
+        type: 'line',
+        data: {
+            labels: ['Day 0', 'Day 15', 'Day 30', 'Day 60'],
+            datasets: [
+                { label: 'Domestic Demand', data: [2.5, 2.6, 2.7, 2.8], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.3 },
+                { label: 'Available Supply', data: [2.5, 2.3, 1.9, 1.5], borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.3 }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, max: 3.5 } } }
+    });
+
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    const priceChart = new Chart(priceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Urea ($/tonne)', 'Freight Index'],
+            datasets: [{
+                label: 'Current Cost',
+                data: [450, 1000],
+                backgroundColor: ['#eab308', '#f97316'],
+                borderRadius: 4
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // --- Interaction Logic ---
+    const slider = document.getElementById('daysSlider');
+    const daysLabel = document.getElementById('daysLabel');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    function updateDashboard(days, noise = 0) {
+        daysLabel.innerText = days;
+        const data = baseData[days];
+
+        // Update Text Metrics
+        document.getElementById('val-lpg').innerText = data.lpg;
+        document.getElementById('val-inflation').innerText = data.inflation;
+        document.getElementById('val-forex').innerText = data.forex;
+        document.getElementById('val-ships').innerText = Math.floor(data.ships + (noise * 5));
+
+        // Update Price Chart (with optional noise to simulate live market data)
+        priceChart.data.datasets[0].data = [
+            data.urea + (noise * 20), 
+            data.freight + (noise * 150)
+        ];
+        priceChart.update();
+        
+        // Add visual indicator to the charts to show the current "Day" line
+        // (Simplified for this prototype by keeping the full line but updating values based on noise)
+        if(noise !== 0) {
+            lpgChart.data.datasets[1].data = [2.5, 2.3, 1.9, 1.5].map(v => v + (Math.random() * 0.1 - 0.05));
+            lpgChart.update();
+        }
+    }
+
+    // Event Listeners
+    slider.addEventListener('input', (e) => {
+        currentNoise = 0; // Reset noise on manual slide
+        updateDashboard(e.target.value);
+    });
+
+    refreshBtn.addEventListener('click', () => {
+        refreshBtn.innerText = "↻ Fetching...";
+        refreshBtn.style.opacity = "0.7";
+        
+        setTimeout(() => {
+            currentNoise = Math.random() > 0.5 ? 1 : -1; // Simulate market fluctuation
+            updateDashboard(slider.value, currentNoise);
+            refreshBtn.innerText = "↻ Refresh Data";
+            refreshBtn.style.opacity = "1";
+        }, 600);
+    });
+
+    // Initial Load
+    updateDashboard(0);
+</script>
+</body>
+</html>
