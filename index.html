@@ -3699,45 +3699,54 @@ function updateScenProbs() {
   let hideTimer;
   let currentEl = null;
 
-  function showTip(el) {
-    if (currentEl === el) { clearTimeout(hideTimer); return; }
-    currentEl = el;
+  function showTip(el, e) {
     clearTimeout(hideTimer);
+    if (currentEl === el) return; // already showing for this element
+    currentEl = el;
     tipText.textContent = el.getAttribute('data-src') || '';
     const url = el.getAttribute('data-url') || '';
     if (url) { tipLink.href = url; tipLink.style.display = 'inline-block'; }
     else { tipLink.style.display = 'none'; }
-    // Position anchored to the element, not the cursor, so tooltip stays still
+    // Show first so we can measure its size
     tip.style.display = 'block';
-    const rect = el.getBoundingClientRect();
+    // Position near cursor so user barely needs to move to reach it
     const vw = window.innerWidth, vh = window.innerHeight;
     const tw = tip.offsetWidth || 320, th = tip.offsetHeight || 90;
-    // Prefer above; fall back to below if not enough room
-    let x = rect.left, y = rect.top - th - 8;
-    if (y < 8) y = rect.bottom + 8;
-    // Keep within viewport horizontally
-    if (x + tw > vw - 10) x = vw - tw - 10;
+    let x = e.clientX + 16;
+    let y = e.clientY - th - 10;
+    if (y < 8) y = e.clientY + 22;       // not enough room above → go below
+    if (x + tw > vw - 8) x = e.clientX - tw - 16; // not enough room right → go left
     if (x < 8) x = 8;
     tip.style.left = x + 'px';
-    tip.style.top = y + 'px';
+    tip.style.top  = y + 'px';
   }
+
   function hideTip() {
     hideTimer = setTimeout(() => {
       tip.style.display = 'none';
       currentEl = null;
-    }, 300);
+    }, 400); // generous grace period so mouse can travel to tooltip
   }
 
+  // Show on any .data-tip hover
   document.addEventListener('mouseover', e => {
     const el = e.target.closest('.data-tip');
-    if (el) showTip(el);
-    else if (!e.target.closest('#src-tooltip')) hideTip();
+    if (el) showTip(el, e);
+    // NOTE: do NOT call hideTip() here for other elements —
+    // that was causing the tooltip to vanish while the mouse
+    // travelled through intermediate elements toward the tooltip.
   });
+
+  // Hide only when mouse leaves .data-tip and is NOT heading to the tooltip
   document.addEventListener('mouseout', e => {
-    if (e.target.closest('.data-tip') && !e.relatedTarget?.closest('#src-tooltip') && !e.relatedTarget?.closest('.data-tip')) {
-      hideTip();
-    }
+    const from = e.target.closest('.data-tip');
+    if (!from) return;
+    const to = e.relatedTarget;
+    if (to?.closest('#src-tooltip') || to?.closest('.data-tip') === from) return;
+    hideTip();
   });
+
+  // Keep tooltip alive while mouse is over it
   tip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
   tip.addEventListener('mouseleave', hideTip);
 })();
