@@ -4312,36 +4312,27 @@ const _NEWS_RSS_FEEDS = [
 ];
 
 async function _fetchRSSFeed(feedInfo) {
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(feedInfo.url)}`;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 12000);
-  try {
-    const resp = await fetch(proxy, { signal: ctrl.signal });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const json = await resp.json();
-    const parser = new DOMParser();
-    let doc = parser.parseFromString(json.contents || '', 'text/xml');
-    if (doc.querySelector('parsererror')) doc = parser.parseFromString(json.contents || '', 'text/html');
-    return Array.from(doc.querySelectorAll('item')).map(item => {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = item.querySelector('description')?.textContent?.trim() || '';
-      const cleanDesc = tmp.textContent?.trim() || '';
-      const pubDateStr = item.querySelector('pubDate')?.textContent?.trim() || '';
-      const link = item.querySelector('link')?.textContent?.trim() ||
-                   item.querySelector('guid')?.textContent?.trim() || feedInfo.url;
-      return {
-        title: item.querySelector('title')?.textContent?.trim() || '(Untitled)',
-        link,
-        date: pubDateStr ? new Date(pubDateStr) : new Date(0),
-        description: cleanDesc,
-        source: feedInfo.name,
-        icon:   feedInfo.icon,
-        wing:   feedInfo.wing,
-      };
-    });
-  } finally {
-    clearTimeout(timer);
-  }
+  const contents = await _proxyFetch(feedInfo.url, 12000);
+  const parser = new DOMParser();
+  let doc = parser.parseFromString(contents, 'text/xml');
+  if (doc.querySelector('parsererror')) doc = parser.parseFromString(contents, 'text/html');
+  return Array.from(doc.querySelectorAll('item')).map(item => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = item.querySelector('description')?.textContent?.trim() || '';
+    const cleanDesc = tmp.textContent?.trim() || '';
+    const pubDateStr = item.querySelector('pubDate')?.textContent?.trim() || '';
+    const link = item.querySelector('link')?.textContent?.trim() ||
+                 item.querySelector('guid')?.textContent?.trim() || feedInfo.url;
+    return {
+      title: item.querySelector('title')?.textContent?.trim() || '(Untitled)',
+      link,
+      date: pubDateStr ? new Date(pubDateStr) : new Date(0),
+      description: cleanDesc,
+      source: feedInfo.name,
+      icon:   feedInfo.icon,
+      wing:   feedInfo.wing,
+    };
+  });
 }
 
 function _isHormuzRelevant(item) {
@@ -4423,24 +4414,64 @@ async function fetchOfficialStatements() {
 // ── GEO MAPS LIVE DATA ──
 const _geoLayers = {};
 
+// ── CORS PROXY CHAIN ──
+// Tries multiple free CORS proxies in sequence. Returns raw response body string.
+// corsproxy.io / codetabs return raw text; allorigins wraps in {contents:"..."}.
+const _PROXY_LIST = [
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+async function _proxyFetch(targetUrl, timeoutMs) {
+  timeoutMs = timeoutMs || 12000;
+  let lastErr;
+  for (const mkProxy of _PROXY_LIST) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const resp = await fetch(mkProxy(targetUrl), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!resp.ok) { lastErr = new Error('HTTP ' + resp.status); continue; }
+      const text = await resp.text();
+      // allorigins wraps in {contents:"..."}; detect and unwrap
+      if (text.startsWith('{"contents":') || text.startsWith('{"status":')) {
+        try {
+          const j = JSON.parse(text);
+          if (typeof j.contents === 'string') return j.contents;
+        } catch {}
+      }
+      return text;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('All proxies failed: ' + targetUrl);
+}
+
 async function _fetchGDELTArticles(query, max) {
   max = max || 5;
-  const since = '20260318000000';
+  const since = '20260228000000';
   const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=artlist&maxrecords=${max}&startdatetime=${since}&sourcelang=english&format=json`;
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(gdeltUrl)}`;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 15000);
+  // GDELT supports CORS natively — try direct first, proxy as fallback
   try {
-    const resp = await fetch(proxy, { signal: ctrl.signal });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const json = await resp.json();
-    const data = JSON.parse(json.contents || '{}');
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 12000);
+    const resp = await fetch(gdeltUrl, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (resp.ok) {
+      const data = await resp.json();
+      return (data.articles || []).slice(0, max);
+    }
+  } catch {}
+  try {
+    const contents = await _proxyFetch(gdeltUrl, 15000);
+    const data = JSON.parse(contents);
     return (data.articles || []).slice(0, max);
   } catch(e) {
     console.warn('[GDELT]', query.slice(0, 40), e.message);
     return [];
-  } finally {
-    clearTimeout(timer);
   }
 }
 
@@ -4498,25 +4529,42 @@ const _BLOCKADE_DATE = new Date('2026-03-01'); // effective blockade start
 async function _fetchYahoo(symbol) {
   const p1 = Math.floor(_CRISIS_ORIGIN.getTime() / 1000);
   const p2 = Math.floor(Date.now() / 1000);
-  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${p1}&period2=${p2}&interval=1d`;
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 12000);
-  try {
-    const resp = await fetch(proxy, { signal: ctrl.signal });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const json = await resp.json();
-    const parsed = JSON.parse(json.contents);
-    const r = parsed.chart?.result?.[0];
-    if (!r) throw new Error('No chart result for ' + symbol);
-    const ts = r.timestamp;
-    const cls = r.indicators.quote[0].close;
-    return ts
-      .map((t, i) => ({ date: new Date(t * 1000), value: cls[i] }))
-      .filter(d => d.value != null && !isNaN(d.value));
-  } finally {
-    clearTimeout(timer);
+  // Try query1 then query2 as alternate Yahoo Finance endpoints
+  const urls = [
+    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${p1}&period2=${p2}&interval=1d`,
+    `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${p1}&period2=${p2}&interval=1d`,
+  ];
+  let lastErr;
+  for (const yUrl of urls) {
+    try {
+      const contents = await _proxyFetch(yUrl, 15000);
+      const parsed = JSON.parse(contents);
+      const r = parsed.chart?.result?.[0];
+      if (!r) throw new Error('No chart result for ' + symbol);
+      const ts = r.timestamp;
+      const cls = r.indicators.quote[0].close;
+      return ts
+        .map((t, i) => ({ date: new Date(t * 1000), value: cls[i] }))
+        .filter(d => d.value != null && !isNaN(d.value));
+    } catch(e) {
+      lastErr = e;
+    }
   }
+  throw lastErr || new Error('Yahoo fetch failed: ' + symbol);
+}
+
+// Direct exchange rate fetch — open.er-api.com is CORS-native, no proxy needed.
+// Used as a reliable INR fallback when Yahoo Finance proxy chain fails.
+async function _fetchINRDirect() {
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), 8000);
+  const resp = await fetch('https://open.er-api.com/v6/latest/USD', { signal: ctrl.signal });
+  if (!resp.ok) throw new Error('er-api HTTP ' + resp.status);
+  const data = await resp.json();
+  const inr = data.rates?.INR;
+  if (!inr) throw new Error('No INR in er-api response');
+  // er-api gives a single spot rate; return as a one-point series for today
+  return [{ date: new Date(), value: inr }];
 }
 
 function _fmtDate(d) {
@@ -4577,35 +4625,56 @@ function _updateKpiFreshness() {
 
 async function fetchAndApplyLiveData() {
   const lu = document.getElementById('last-updated');
-  const prevText = lu ? lu.textContent : '';
   if (lu) lu.textContent = 'Fetching live data\u2026';
-  try {
-    const [nifty, inr, brent, vix] = await Promise.all([
-      _fetchYahoo('^NSEI'),
-      _fetchYahoo('USDINR=X'),
-      _fetchYahoo('BZ=F'),
-      _fetchYahoo('^INDIAVIX'),
-    ]);
-    _liveMarketData = { nifty, inr, brent, vix };
-    // Update BASE so subsequent updateBanner() calls use real values
-    if (brent.length) BASE.brent = +brent[brent.length - 1].value.toFixed(2);
-    if (inr.length)   BASE.inr   = +inr[inr.length - 1].value.toFixed(2);
-    if (nifty.length) BASE.nifty = Math.round(nifty[nifty.length - 1].value);
-    if (vix.length)   BASE.vix   = +vix[vix.length - 1].value.toFixed(2);
+
+  // Fire all fetches in parallel; partial success is fine
+  const [rNifty, rInr, rBrent, rVix, rInrDirect] = await Promise.allSettled([
+    _fetchYahoo('^NSEI'),
+    _fetchYahoo('USDINR=X'),
+    _fetchYahoo('BZ=F'),
+    _fetchYahoo('^INDIAVIX'),
+    _fetchINRDirect(),   // CORS-native fallback for USD/INR
+  ]);
+
+  const ok = r => r.status === 'fulfilled' && r.value?.length;
+  const nifty = ok(rNifty)  ? rNifty.value  : null;
+  const brent = ok(rBrent)  ? rBrent.value  : null;
+  const vix   = ok(rVix)    ? rVix.value    : null;
+  // Prefer Yahoo INR series (full history); fall back to er-api spot rate
+  const inr   = ok(rInr)    ? rInr.value
+              : ok(rInrDirect) ? rInrDirect.value : null;
+
+  const anyLive = nifty || inr || brent || vix;
+
+  if (anyLive) {
+    // Merge whatever we got into _liveMarketData (keep previous values for missing)
+    _liveMarketData = _liveMarketData || {};
+    if (nifty) _liveMarketData.nifty = nifty;
+    if (inr)   _liveMarketData.inr   = inr;
+    if (brent) _liveMarketData.brent = brent;
+    if (vix)   _liveMarketData.vix   = vix;
+
+    if (brent) BASE.brent = +brent[brent.length - 1].value.toFixed(2);
+    if (inr)   BASE.inr   = +inr[inr.length - 1].value.toFixed(2);
+    if (nifty) BASE.nifty = Math.round(nifty[nifty.length - 1].value);
+    if (vix)   BASE.vix   = +vix[vix.length - 1].value.toFixed(2);
+
     _applyToCharts();
     updateBanner();
     _updateDayCounter();
     _updateKpiFreshness();
     _applyLivePriceOverlays();
+
+    const gotAll = nifty && inr && brent && vix;
     const now = new Date();
-    if (lu) lu.textContent = '\uD83D\uDFE2 Live \u00b7 ' +
-      now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' ' +
-      now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-  } catch (err) {
-    console.warn('[fetchAndApplyLiveData]', err.message);
-    if (lu) lu.textContent = prevText || '\u26A0 Live data unavailable';
+    const ts = now.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) + ' ' +
+               now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    if (lu) lu.textContent = (gotAll ? '\uD83D\uDFE2 Live' : '\uD83D\uDFE1 Partial') + ' \u00b7 ' + ts;
+  } else {
+    console.warn('[fetchAndApplyLiveData] all sources failed');
     updateBanner();
     _updateDayCounter();
+    if (lu) lu.textContent = '\u26A0 Live data unavailable \u2014 showing last known values';
   }
 }
 
