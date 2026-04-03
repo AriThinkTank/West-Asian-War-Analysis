@@ -802,6 +802,29 @@
     background: #F7F5F0; border: 1px solid var(--border); border-radius: 8px;
     padding: 14px 16px; font-size: 12px; color: var(--muted); line-height: 1.6;
   }
+
+  /* Live feed hidden by default — JS shows it only when real data is found */
+  #live-stmts-section { display: none; }
+
+  /* ── GEO MAP LIVE NEWS PANEL ── */
+  .geo-news-panel { display: none; margin-top: 12px; }
+  .geo-news-header {
+    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+    color: rgba(255,255,255,0.4); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .geo-news-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #27AE60;
+    animation: blink 1.5s infinite; flex-shrink: 0;
+  }
+  .geo-news-item { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .geo-news-item:last-child { border: none; padding-bottom: 0; }
+  .geo-news-meta { font-size: 9px; color: rgba(255,255,255,0.35); font-family: 'DM Mono',monospace; margin-bottom: 2px; }
+  .geo-news-title {
+    font-size: 10px; color: rgba(255,255,255,0.75); line-height: 1.45;
+    text-decoration: none; display: block;
+  }
+  .geo-news-title:hover { color: white; }
 </style>
 </head>
 <body>
@@ -1509,6 +1532,7 @@
           <div class="map-stat-row"><div class="ms-label">Traffic Drop</div><div class="ms-val" style="color:#FF6B6B">–97%</div><div class="ms-sub">Tanker traffic through Hormuz by Mar 12</div></div>
           <div class="map-stat-row"><div class="ms-label">IRGC Patrol</div><div class="ms-val" style="color:#FFA94D">24/7</div><div class="ms-sub">Armed interdiction of non-exempt vessels</div></div>
           <div class="map-stat-row"><div class="ms-label">IRIS Dena</div><div class="ms-val" style="color:#FF6B6B">104 KIA</div><div class="ms-sub">Sunk off Sri Lanka, Mar 4 by USS Charlotte</div></div>
+          <div id="geo-news-blockade" class="geo-news-panel"></div>
         </div>
       </div>
       <div class="map-insight-footer">
@@ -1539,6 +1563,7 @@
           <div class="map-stat-row"><div class="ms-label">Cape Route Cost</div><div class="ms-val" style="color:#FF8C42">+$3–4</div><div class="ms-sub">Per barrel vs normal route</div></div>
           <div class="map-stat-row"><div class="ms-label">Extra Transit Time</div><div class="ms-val" style="color:#FFA94D">+25 days</div><div class="ms-sub">Gulf→India via Cape vs Hormuz</div></div>
           <div class="map-stat-row"><div class="ms-label">Pipeline Bypass</div><div class="ms-val" style="color:#FFD43B">5.5M bbl/d</div><div class="ms-sub">Max Saudi/UAE bypass capacity (vs 20M normal)</div></div>
+          <div id="geo-news-routes" class="geo-news-panel"></div>
         </div>
       </div>
       <div class="map-insight-footer">
@@ -1559,11 +1584,12 @@
           </div>
           <hr class="map-divider"/>
           <div class="side-title">Disruption by Product</div>
-          <div class="map-stat-row"><div class="ms-label">Crude Oil</div><div class="ms-val" style="color:#FF8C42">88%</div><div class="ms-sub">Of imports via Hormuz; $103/bbl</div></div>
+          <div class="map-stat-row"><div class="ms-label">Crude Oil</div><div class="ms-val" style="color:#FF8C42">88%</div><div class="ms-sub">Of imports via Hormuz; <span id="map3-brent">$103/bbl</span></div></div>
           <div class="map-stat-row"><div class="ms-label">LPG</div><div class="ms-val" style="color:#FBBF24">90%</div><div class="ms-sub">332M connections; supply at 56%</div></div>
           <div class="map-stat-row"><div class="ms-label">LNG</div><div class="ms-val" style="color:#22D3EE">~65%</div><div class="ms-sub">Qatar offline; fertilizer feedstock too</div></div>
           <div class="map-stat-row"><div class="ms-label">Helium</div><div class="ms-val" style="color:#F472B6">100%</div><div class="ms-sub">Qatar Ras Laffan = 33% global supply</div></div>
           <div class="map-stat-row"><div class="ms-label">Fertilizer</div><div class="ms-val" style="color:#4ADE80">~38%</div><div class="ms-sub">Gulf urea/ammonia; Kharif at risk</div></div>
+          <div id="geo-news-commodities" class="geo-news-panel"></div>
         </div>
       </div>
       <div class="map-insight-footer">
@@ -1594,6 +1620,7 @@
           <div class="map-stat-row"><div class="ms-label">Total Diaspora</div><div class="ms-val" style="color:#FBBF24">9.1M</div><div class="ms-sub">In 6 Gulf states at risk</div></div>
           <div class="map-stat-row"><div class="ms-label">Annual Remittances</div><div class="ms-val" style="color:#4ADE80">$50B</div><div class="ms-sub">~1.4% of India's GDP</div></div>
           <div class="map-stat-row"><div class="ms-label">Stranded Seafarers</div><div class="ms-val" style="color:#FF6B6B">20,000</div><div class="ms-sub">In conflict zone on 38 ships</div></div>
+          <div id="geo-news-diaspora" class="geo-news-panel"></div>
         </div>
       </div>
       <div class="map-insight-footer">
@@ -1623,6 +1650,7 @@
           <div class="map-stat-row"><div class="ms-label">Chabahar Advantage</div><div class="ms-val" style="color:#22C55E">0 days</div><div class="ms-sub">Extra transit vs Hormuz route</div></div>
           <div class="map-stat-row"><div class="ms-label">INSTC vs Suez</div><div class="ms-val" style="color:#4ADE80">–30%</div><div class="ms-sub">Cost saving on India-Russia freight</div></div>
           <div class="map-stat-row"><div class="ms-label">Bypass Capacity</div><div class="ms-val" style="color:#F59E0B">5.5M</div><div class="ms-sub">Bbl/day max (vs 20M via Hormuz)</div></div>
+          <div id="geo-news-alternatives" class="geo-news-panel"></div>
         </div>
       </div>
       <div class="map-insight-footer">
@@ -2904,12 +2932,13 @@ function lazyInitTab(id) {
   else if (id === 'complexity') { makeCharts(); }
   else if (id === 'projections') { makeCharts(); }
   else if (id === 'statements') { makeStmtCharts(); fetchOfficialStatements(); }
+  else if (id === 'geography') { updateGeoMapsLive(); }
 }
 
 // ── REFRESH ──
 function refreshDashboard(btn) {
   btn.classList.add('spinning');
-  Promise.all([fetchAndApplyLiveData(), fetchOfficialStatements()]).finally(() => {
+  Promise.all([fetchAndApplyLiveData(), fetchOfficialStatements(), updateGeoMapsLive()]).finally(() => {
     makeCharts();
     makeStmtCharts();
     btn.classList.remove('spinning');
@@ -3508,6 +3537,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   fetchAndApplyLiveData();
   // Pre-fetch official statements so they're ready when the tab is opened
   fetchOfficialStatements();
+  // Fetch live geo news for all 5 maps
+  updateGeoMapsLive();
 
   // Restore tab from URL hash
   const hash = location.hash.replace('#','');
@@ -3539,8 +3570,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  // Auto-refresh every 5 minutes — fetch live data and official statements
-  setInterval(() => { fetchAndApplyLiveData(); fetchOfficialStatements(); }, 300000);
+  // Auto-refresh every 5 minutes — fetch live data, official statements, and geo news
+  setInterval(() => { fetchAndApplyLiveData(); fetchOfficialStatements(); updateGeoMapsLive(); }, 300000);
 });
 
 // ── STATEMENTS TAB ──
@@ -3773,23 +3804,31 @@ function updateScenProbs() {
 }
 
 // ── OFFICIAL STATEMENTS LIVE FEED ──
-// Sources: PIB (Press Information Bureau) — pib.gov.in — official Government of India releases
-const _PIB_FEEDS = [
-  { url: 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3',  name: 'PIB · Ministry of External Affairs', icon: '🏛️', wing: 'mea' },
-  { url: 'https://pib.gov.in/RssMain.aspx?ModId=2&Lang=1&Regid=3',  name: "PIB · Prime Minister's Office",        icon: '🤝', wing: 'pm'  },
-  { url: 'https://pib.gov.in/RssMain.aspx?ModId=47&Lang=1&Regid=3', name: 'PIB · Ministry of Petroleum & Gas',   icon: '⚡', wing: 'min' },
-  { url: 'https://pib.gov.in/RssMain.aspx?ModId=8&Lang=1&Regid=3',  name: 'PIB · Ministry of Finance',           icon: '💰', wing: 'min' },
-];
+// Sources: Major Indian news RSS feeds + PIB official releases
+// Filtered for Iran/Hormuz/energy crisis relevance since March 18 2026
 
-// Keywords for filtering Iran/Hormuz-relevant releases
 const _STMT_KEYWORDS = [
   'iran', 'hormuz', 'blockade', 'strait', 'crude oil', 'lpg', 'liquefied petroleum',
   'energy security', 'gulf', 'oil tanker', 'araghchi', 'pezeshkian', 'middle east',
   'west asia', 'persian gulf', 'sanctions', 'oil price', 'petroleum import',
   'brent', 'shipping', 'tanker', 'natural gas', 'remittance', 'diaspora', 'jaishankar',
+  'oil import', 'crude import', 'fuel price', 'petroleum', 'opec',
 ];
 
-async function _fetchPIBFeed(feedInfo) {
+const _CRISIS_CUTOFF = new Date('2026-03-18T00:00:00Z');
+
+const _NEWS_RSS_FEEDS = [
+  { url: 'https://www.thehindu.com/news/national/feeder/default.rss',            name: 'The Hindu',                icon: '📰', wing: 'media' },
+  { url: 'https://www.thehindu.com/business/feeder/default.rss',                 name: 'The Hindu · Business',     icon: '📰', wing: 'media' },
+  { url: 'https://www.business-standard.com/rss/economy-policy-10206.rss',       name: 'Business Standard',        icon: '📊', wing: 'media' },
+  { url: 'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms', name: 'Economic Times',           icon: '📈', wing: 'media' },
+  { url: 'https://www.livemint.com/rss/news',                                    name: 'LiveMint',                 icon: '🗞️', wing: 'media' },
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3',              name: 'PIB · MEA',                icon: '🏛️', wing: 'govt'  },
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=2&Lang=1&Regid=3',              name: 'PIB · PMO',                icon: '🤝', wing: 'govt'  },
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=47&Lang=1&Regid=3',             name: 'PIB · Petroleum',          icon: '⚡', wing: 'govt'  },
+];
+
+async function _fetchRSSFeed(feedInfo) {
   const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(feedInfo.url)}`;
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 12000);
@@ -3798,14 +3837,11 @@ async function _fetchPIBFeed(feedInfo) {
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const json = await resp.json();
     const parser = new DOMParser();
-    const doc = parser.parseFromString(json.contents || '', 'text/xml');
-    const parseErr = doc.querySelector('parsererror');
-    if (parseErr) throw new Error('RSS parse error');
+    let doc = parser.parseFromString(json.contents || '', 'text/xml');
+    if (doc.querySelector('parsererror')) doc = parser.parseFromString(json.contents || '', 'text/html');
     return Array.from(doc.querySelectorAll('item')).map(item => {
-      const raw = item.querySelector('description')?.textContent?.trim() || '';
-      // Strip any residual HTML tags from description
       const tmp = document.createElement('div');
-      tmp.innerHTML = raw;
+      tmp.innerHTML = item.querySelector('description')?.textContent?.trim() || '';
       const cleanDesc = tmp.textContent?.trim() || '';
       const pubDateStr = item.querySelector('pubDate')?.textContent?.trim() || '';
       const link = item.querySelector('link')?.textContent?.trim() ||
@@ -3830,6 +3866,10 @@ function _isHormuzRelevant(item) {
   return _STMT_KEYWORDS.some(kw => text.includes(kw));
 }
 
+function _isAfterCutoff(item) {
+  return item.date instanceof Date && !isNaN(item.date) && item.date >= _CRISIS_CUTOFF;
+}
+
 function _buildLiveCard(item) {
   const isValidDate = item.date instanceof Date && !isNaN(item.date) && item.date.getTime() > 0;
   const dateStr = isValidDate
@@ -3838,10 +3878,11 @@ function _buildLiveCard(item) {
   const desc = item.description
     ? (item.description.length > 320 ? item.description.slice(0, 317) + '\u2026' : item.description)
     : '';
-  // Sanitise link (allow only https pib.gov.in / mea.gov.in / pmo URLs)
-  const safeLink = /^https:\/\/(pib\.gov\.in|www\.mea\.gov\.in|www\.pmindia\.gov\.in|petroleum\.nic\.in|finmin\.nic\.in)/.test(item.link)
-    ? item.link : '';
-  const srcShort = item.source.split('\u00b7')[0].trim(); // "PIB " part
+  const safeLink = /^https?:\/\//.test(item.link) ? item.link : '';
+  const srcShort = item.source.split('\u00b7')[0].trim();
+  const badgeBg    = item.wing === 'govt' ? '#E8F8F0' : '#EBF5FB';
+  const badgeColor = item.wing === 'govt' ? '#1A8449' : '#1A5276';
+  const badgeLabel = item.wing === 'govt' ? '🟢 Official' : '📡 Live';
   return `<div class="live-stmt-card" data-wing="${item.wing}">
   <div class="live-stmt-inner">
     <span class="live-stmt-icon">${item.icon}</span>
@@ -3849,64 +3890,120 @@ function _buildLiveCard(item) {
       <div class="live-stmt-meta">
         <span class="live-stmt-source">${item.source}</span>
         <span class="live-stmt-date">${dateStr}</span>
-        <span class="live-badge">&#128308; Live</span>
+        <span class="live-badge" style="background:${badgeBg};color:${badgeColor}">${badgeLabel}</span>
       </div>
       <div class="live-stmt-title">${item.title}</div>
       ${desc ? `<div class="live-stmt-desc">${desc}</div>` : ''}
-      ${safeLink ? `<a class="live-stmt-link" href="${safeLink}" target="_blank" rel="noopener noreferrer">\u2197 Read full release on ${srcShort}</a>` : ''}
+      ${safeLink ? `<a class="live-stmt-link" href="${safeLink}" target="_blank" rel="noopener noreferrer">\u2197 Read on ${srcShort}</a>` : ''}
     </div>
   </div>
 </div>`;
 }
 
 async function fetchOfficialStatements() {
+  const section   = document.getElementById('live-stmts-section');
   const container = document.getElementById('live-stmts-container');
   const status    = document.getElementById('live-stmts-status');
   if (!container) return;
 
-  const results = await Promise.allSettled(_PIB_FEEDS.map(f => _fetchPIBFeed(f)));
+  const results = await Promise.allSettled(_NEWS_RSS_FEEDS.map(f => _fetchRSSFeed(f)));
 
   let allItems = [];
-  let successCount = 0;
   results.forEach((r, i) => {
-    if (r.status === 'fulfilled') {
-      allItems = allItems.concat(r.value);
-      successCount++;
-    } else {
-      console.warn('[PIB feed]', _PIB_FEEDS[i].name, r.reason?.message || r.reason);
-    }
+    if (r.status === 'fulfilled') allItems = allItems.concat(r.value);
+    else console.warn('[RSS feed]', _NEWS_RSS_FEEDS[i].name, r.reason?.message || r.reason);
   });
 
-  if (successCount === 0) {
-    container.innerHTML = `<div class="live-feed-empty">
-      <strong>Could not reach PIB feeds.</strong> Official releases from the Press Information Bureau (pib.gov.in) will appear here automatically when the connection is available. The Crisis Archive below contains all 24 verified statements from 28\u00a0Feb\u2013\u202618\u00a0Mar 2026.
-    </div>`;
-    if (status) status.textContent = '\u26A0 PIB unreachable \u2014 using archive data';
+  // Filter: Hormuz-relevant AND published after the cutoff
+  const seen = new Set();
+  const relevant = allItems
+    .filter(item => _isHormuzRelevant(item) && _isAfterCutoff(item))
+    .sort((a, b) => b.date - a.date)
+    .filter(item => { if (seen.has(item.title)) return false; seen.add(item.title); return true; });
+
+  if (relevant.length === 0) {
+    // Never show empty/error state — hide section completely
+    if (section) section.style.display = 'none';
     return;
   }
 
-  // Filter for Hormuz/Iran relevance and sort newest-first
-  const relevant = allItems
-    .filter(_isHormuzRelevant)
-    .sort((a, b) => b.date - a.date);
+  const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  if (section) section.style.display = 'block';
+  container.innerHTML = relevant.map(_buildLiveCard).join('');
+  if (status) status.textContent = `${relevant.length} live update(s) \u00b7 Updated ${timeStr}`;
 
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  // Update the "Statements Tracked" KPI tile
+  const kpiTiles = document.querySelectorAll('#tab-statements .kpi-tile .kpi-val');
+  if (kpiTiles[0]) kpiTiles[0].textContent = 24 + relevant.length;
+}
 
-  if (relevant.length === 0) {
-    container.innerHTML = `<div class="live-feed-empty">
-      <strong>No new Iran/Hormuz-related releases found</strong> across ${successCount} official PIB feed(s).
-      New official statements from MEA, PMO, and the Petroleum Ministry on Iran/Hormuz/energy security will appear here automatically.
-      Checked: ${timeStr}.
-    </div>`;
-    if (status) status.textContent = `${successCount} feed(s) checked \u00b7 No new Iran/energy releases \u00b7 ${timeStr}`;
-  } else {
-    container.innerHTML = relevant.map(_buildLiveCard).join('');
-    if (status) status.textContent = `${relevant.length} relevant release(s) found \u00b7 ${successCount} feed(s) \u00b7 Updated ${timeStr}`;
-    // Update the "Statements Tracked" KPI tile
-    const kpiTiles = document.querySelectorAll('#tab-statements .kpi-tile .kpi-val');
-    if (kpiTiles[0]) kpiTiles[0].textContent = 24 + relevant.length;
+// ── GEO MAPS LIVE DATA ──
+const _geoLayers = {};
+
+async function _fetchGDELTArticles(query, max) {
+  max = max || 5;
+  const since = '20260318000000';
+  const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=artlist&maxrecords=${max}&startdatetime=${since}&sourcelang=english&format=json`;
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(gdeltUrl)}`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const resp = await fetch(proxy, { signal: ctrl.signal });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const json = await resp.json();
+    const data = JSON.parse(json.contents || '{}');
+    return (data.articles || []).slice(0, max);
+  } catch(e) {
+    console.warn('[GDELT]', query.slice(0, 40), e.message);
+    return [];
+  } finally {
+    clearTimeout(timer);
   }
+}
+
+function _renderGeoNews(panelId, articles) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  if (!articles || articles.length === 0) { panel.style.display = 'none'; return; }
+  const items = articles.map(a => {
+    let dateStr = 'Recent';
+    if (a.seendate) {
+      try {
+        const ds = a.seendate.replace(/^(\d{4})(\d{2})(\d{2}).*/, '$1-$2-$3');
+        dateStr = new Date(ds).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+      } catch(_) {}
+    }
+    const safeUrl = /^https?:\/\//.test(a.url) ? a.url : '#';
+    const title   = (a.title || '').slice(0, 110) + ((a.title || '').length > 110 ? '\u2026' : '');
+    const source  = a.domain || '';
+    return `<div class="geo-news-item">
+      <div class="geo-news-meta">${source}${source && dateStr ? ' \u00b7 ' : ''}${dateStr}</div>
+      <a class="geo-news-title" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${title}</a>
+    </div>`;
+  }).join('');
+  panel.innerHTML = `<div class="geo-news-header"><span class="geo-news-dot"></span>Live News</div>${items}`;
+  panel.style.display = 'block';
+}
+
+function _applyLivePriceOverlays() {
+  const m3brent = document.getElementById('map3-brent');
+  if (m3brent && BASE.brent) m3brent.textContent = `$${BASE.brent.toFixed(0)}/bbl`;
+}
+
+async function updateGeoMapsLive() {
+  const [blockadeArts, routeArts, commodArts, diasporaArts, altArts] = await Promise.all([
+    _fetchGDELTArticles('Hormuz blockade Iran India shipping tanker', 5),
+    _fetchGDELTArticles('India alternative shipping route Red Sea Suez Cape Good Hope', 4),
+    _fetchGDELTArticles('India crude oil price energy import Iran sanctions brent', 5),
+    _fetchGDELTArticles('India Iran diaspora remittance workers stranded Gulf', 4),
+    _fetchGDELTArticles('India Chabahar port pipeline alternative energy corridor Iran', 4),
+  ]);
+  _renderGeoNews('geo-news-blockade',     blockadeArts);
+  _renderGeoNews('geo-news-routes',       routeArts);
+  _renderGeoNews('geo-news-commodities',  commodArts);
+  _renderGeoNews('geo-news-diaspora',     diasporaArts);
+  _renderGeoNews('geo-news-alternatives', altArts);
+  _applyLivePriceOverlays();
 }
 
 // ── LIVE MARKET DATA ──
@@ -4014,6 +4111,7 @@ async function fetchAndApplyLiveData() {
     updateBanner();
     _updateDayCounter();
     _updateKpiFreshness();
+    _applyLivePriceOverlays();
     const now = new Date();
     if (lu) lu.textContent = '\uD83D\uDFE2 Live \u00b7 ' +
       now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' ' +
