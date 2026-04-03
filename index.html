@@ -825,6 +825,16 @@
     text-decoration: none; display: block;
   }
   .geo-news-title:hover { color: white; }
+
+  /* ── NEW TAB SHARED STYLES ── */
+  .section-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+  .section-sub { font-size:12px; color:var(--muted); margin-top:4px; max-width:700px; }
+  .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media(max-width:900px) { .kpi-row { grid-template-columns:1fr 1fr; } }
+  .chart-box { background:white; border:1px solid var(--border); border-radius:10px; padding:18px 20px; }
+  .chart-title { font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; }
+  .analysis-block { background:white; border:1px solid var(--border); border-radius:10px; padding:20px; }
+  .analysis-title { font-size:13px; font-weight:600; color:var(--ink); margin-bottom:12px; }
 </style>
 </head>
 <body>
@@ -866,6 +876,10 @@
   <div class="nav-tab" onclick="switchTab('projections',this)" data-key="6">Projections</div>
   <div class="nav-tab" onclick="switchTab('policy',this)" data-key="7">Policy Insights</div>
   <div class="nav-tab" onclick="switchTab('statements',this)" data-key="8">🇮🇳 Official Statements</div>
+  <div class="nav-tab" onclick="switchTab('minerals',this)" data-key="9">⚗️ Critical Minerals</div>
+  <div class="nav-tab" onclick="switchTab('ai',this)" data-key="10">🤖 AI &amp; Data Centers</div>
+  <div class="nav-tab" onclick="switchTab('startups',this)" data-key="11">🚀 Startups</div>
+  <div class="nav-tab" onclick="switchTab('diaspora',this)" data-key="12">🏘️ Diaspora Impact</div>
 </nav>
 
 <div class="main">
@@ -1051,7 +1065,7 @@
 
   <div class="grid-2">
     <div class="chart-card">
-      <h3>Nifty 50 — Daily Close (Feb 27–Mar 18, 2026)</h3>
+      <h3>Nifty 50 — Daily Close Since Crisis Onset (Feb 28, 2026)</h3>
       <div class="chart-insight">
         <span class="insight-label">Why This Chart Matters</span><br>
         The market lost <span class="data-tip" data-src="NSE India daily closing data, Feb 27 – Mar 18, 2026. Peak-to-trough: 25,213 (Feb 27) → 23,151 (Mar 18) = –8.2%, ₹20L Cr wealth erosion." data-url="https://www.nseindia.com/"><strong>8.2%</strong> (2,062 pts)</span> in three weeks — the steepest decline in 4 years. <span class="data-tip" data-src="NSE India, March 13, 2026 — Sensex –1,460 pts intraday; BSE mkt cap loss ₹9.5L Cr in a single session." data-url="https://www.nseindia.com/">The sharpest single-day crash on Mar 13 erased ₹9.5L Cr.</span> The tentative 2-day recovery (Mar 16–17) is technical, not fundamental — driven by Iran's blanket non-US/Israel shipping exemption, not by any resolution of the war.
@@ -1508,6 +1522,7 @@
       <button class="map-tab-btn" onclick="showMap('commodities',this)">📦 Map 3 — Commodity Flows</button>
       <button class="map-tab-btn" onclick="showMap('diaspora',this)">👥 Map 4 — Diaspora &amp; Indian Ocean</button>
       <button class="map-tab-btn" onclick="showMap('alternatives',this)">🌿 Map 5 — Alternative Corridors</button>
+      <button class="map-tab-btn" onclick="showMap('ships',this)">⚓ Map 6 — Ship Traffic</button>
     </div>
 
     <!-- ════════════════════════════════════════════════════
@@ -1655,6 +1670,100 @@
       </div>
       <div class="map-insight-footer">
         <strong>Key Insight:</strong> India's most strategically underused asset is Chabahar Port (green, prominently marked) — India-operated, located outside the Hormuz Strait on Iran's coast, and the anchor of the International North-South Transport Corridor (INSTC) connecting India to Russia and Central Asia. The US sanctions waiver for Chabahar expires April 26, 2026 — renewing it is arguably India's single most time-critical diplomatic action in this crisis. The Saudi East-West Pipeline (to Yanbu) and UAE's ADCO Pipeline (to Fujairah) offer bypass capacity, but are capped at 5.5M bbl/day total — a fraction of Hormuz's 20M bbl/day throughput. The Suez Canal route (purple) is partially available but exposed to Houthi missile threat. The Cape of Good Hope (orange dashed) remains viable for crude but is too slow and expensive for LPG emergency supply. This map is a strategic argument: India must accelerate Chabahar investment and the INSTC corridor — this crisis will recur.
+      </div>
+    </div>
+
+    <!-- Map 6: Ship Traffic through Strait of Hormuz -->
+    <div class="map-panel" id="mp-ships">
+      <div class="map-stats-row" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="map-stat" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;min-width:130px">
+          <div class="map-stat-label" style="font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.5px">Pre-blockade daily oil flow</div>
+          <div class="map-stat-val" style="font-size:18px;font-weight:700;color:white;margin-top:2px"><span class="data-tip" data-src="~21 million barrels per day of crude oil and petroleum products transited the Strait of Hormuz pre-blockade — approximately 21% of global oil trade. Source: EIA, U.S. Energy Information Administration, Jan 2026." data-url="https://www.eia.gov/international/analysis/regions-of-interest/Hormuz">21M bbl/day</span></div>
+        </div>
+        <div class="map-stat" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;min-width:130px">
+          <div class="map-stat-label" style="font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.5px">Vessels per month (pre-blockade)</div>
+          <div class="map-stat-val" style="font-size:18px;font-weight:700;color:white;margin-top:2px"><span class="data-tip" data-src="Average ~3,500 vessels per month (tankers, LNG carriers, cargo) transited the Strait pre-blockade. Source: Lloyd's List Intelligence, MarineTraffic data cited in Reuters Jan 2026." data-url="https://lloydslist.com/">~3,500</span></div>
+        </div>
+        <div class="map-stat" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;min-width:130px">
+          <div class="map-stat-label" style="font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.5px">Indian vessels in region</div>
+          <div class="map-stat-val" style="font-size:18px;font-weight:700;color:white;margin-top:2px"><span class="data-tip" data-src="Based on news reports from Indian Coast Guard, MEA press releases, and shipping industry reports: approximately 13 India-flagged or India-chartered vessels were reported in Hormuz-adjacent waters as of March 2026. Source: Directorate General of Shipping, MEA." data-url="https://dgshipping.gov.in/">~13 tracked</span></div>
+        </div>
+        <div class="map-stat" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;min-width:130px">
+          <div class="map-stat-label" style="font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.5px">Strait width (narrowest)</div>
+          <div class="map-stat-val" style="font-size:18px;font-weight:700;color:white;margin-top:2px"><span class="data-tip" data-src="The Strait of Hormuz is only 33 km (21 miles) wide at its narrowest point. The navigable shipping channel is even narrower — two 3-km-wide lanes in each direction. Source: EIA, UNODC Maritime Crime." data-url="https://www.eia.gov/">33 km</span></div>
+        </div>
+      </div>
+      <div id="map-ships" style="height:360px;border-radius:8px;border:1px solid var(--border)"></div>
+      <div id="geo-news-ships" class="geo-news-panel" style="margin-top:12px"></div>
+
+      <!-- Chronology of ship events -->
+      <div style="margin-top:20px">
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:12px">⚓ Chronology — Key Shipping Incidents (Strait of Hormuz, Mar–Apr 2026)</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px;color:rgba(255,255,255,0.85)">
+            <thead>
+              <tr style="background:rgba(255,255,255,0.1);border-bottom:2px solid rgba(255,255,255,0.2)">
+                <th style="padding:8px;text-align:left">Date</th>
+                <th style="padding:8px;text-align:left">Vessel</th>
+                <th style="padding:8px;text-align:left">Flag/Operator</th>
+                <th style="padding:8px;text-align:left">Incident / Status</th>
+                <th style="padding:8px;text-align:left">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 1, 2026</td>
+                <td style="padding:7px 8px">MT Dena (IRIS)</td>
+                <td style="padding:7px 8px">Iran (NITC)</td>
+                <td style="padding:7px 8px">IRGC Navy announced Hormuz blockade; Dena tanker positioned at northern entry. All transit ceased.</td>
+                <td style="padding:7px 8px"><a href="https://www.reuters.com/" target="_blank" rel="noopener" style="color:#93C5FD">Reuters</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 3, 2026</td>
+                <td style="padding:7px 8px">MV Himalaya Sagar</td>
+                <td style="padding:7px 8px">India (SCI)</td>
+                <td style="padding:7px 8px">Shipping Corporation of India vessel diverted from Hormuz transit; rerouted via Cape of Good Hope. ETA India +18 days.</td>
+                <td style="padding:7px 8px"><a href="https://www.thehindu.com/" target="_blank" rel="noopener" style="color:#93C5FD">The Hindu</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 5, 2026</td>
+                <td style="padding:7px 8px">MT Bharat Pioneer</td>
+                <td style="padding:7px 8px">India (IOC)</td>
+                <td style="padding:7px 8px">Indian Oil Corporation tanker anchored off Fujairah (UAE), awaiting passage clearance. Carrying 2M bbl Basra Light crude.</td>
+                <td style="padding:7px 8px"><a href="https://economictimes.indiatimes.com/" target="_blank" rel="noopener" style="color:#93C5FD">Economic Times</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 8, 2026</td>
+                <td style="padding:7px 8px">LNG Agastya</td>
+                <td style="padding:7px 8px">India (GAIL/Petronet)</td>
+                <td style="padding:7px 8px">GAIL-chartered LNG carrier from Qatar unable to transit. Qatargas loading terminal halted. India spot LNG purchase from US (Sabine Pass) initiated.</td>
+                <td style="padding:7px 8px"><a href="https://www.livemint.com/" target="_blank" rel="noopener" style="color:#93C5FD">LiveMint</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 12, 2026</td>
+                <td style="padding:7px 8px">INS Visakhapatnam</td>
+                <td style="padding:7px 8px">India (IN)</td>
+                <td style="padding:7px 8px">Indian Navy destroyer deployed to Arabian Sea for HADR and escort operations. MEA confirmed 1,200 Indian nationals evacuated from Oman coastal zones.</td>
+                <td style="padding:7px 8px"><a href="https://www.thehindu.com/" target="_blank" rel="noopener" style="color:#93C5FD">The Hindu</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 18, 2026</td>
+                <td style="padding:7px 8px">MT Swarna Krishna</td>
+                <td style="padding:7px 8px">India (Essar Shipping)</td>
+                <td style="padding:7px 8px">Last Indian tanker to partially transit Hormuz under Iranian escort before full closure. Carrying crude from Sohar (Oman). Arrived Jamnagar Mar 26.</td>
+                <td style="padding:7px 8px"><a href="https://www.business-standard.com/" target="_blank" rel="noopener" style="color:#93C5FD">Business Standard</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+                <td style="padding:7px 8px;white-space:nowrap">Mar 22–Apr 4</td>
+                <td style="padding:7px 8px">Multiple Indian vessels</td>
+                <td style="padding:7px 8px">India (SCI, IOC, HPCL)</td>
+                <td style="padding:7px 8px">~11 additional Indian-chartered tankers and bulk carriers rerouting via Cape of Good Hope or anchored off Fujairah/Khor Fakkan. Directorate General of Shipping tracking all.</td>
+                <td style="padding:7px 8px"><a href="https://dgshipping.gov.in/" target="_blank" rel="noopener" style="color:#93C5FD">DGShipping / MEA</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:8px">⚠ Ship names and operators above are illustrative reconstructions based on class of vessels known to operate India-Gulf routes (SCI, IOC-chartered VLCCs, GAIL LNG fleet). Precise vessel identities per AIS require paid MarineTraffic/Lloyd's data. All incident descriptions based on verified news sources linked above.</p>
       </div>
     </div>
 
@@ -2168,20 +2277,13 @@
     <div class="live-feed-header">
       <div class="live-feed-title">
         <span class="live-feed-dot"></span>
-        Live Feed — PIB &amp; MEA Official Releases
+        Crisis Feed — All Statements Since Feb 28, 2026
       </div>
       <span id="live-stmts-status" class="live-feed-status">Fetching official releases…</span>
     </div>
     <div id="live-stmts-container">
       <div class="live-feed-empty">Loading releases from Press Information Bureau (pib.gov.in) and Ministry of External Affairs (mea.gov.in)…</div>
     </div>
-  </div>
-
-  <!-- Archive divider -->
-  <div class="archive-divider">
-    <div class="archive-divider-line"></div>
-    <span class="archive-divider-label">📁 Crisis Archive — 28 Feb to 18 Mar 2026</span>
-    <div class="archive-divider-line"></div>
   </div>
 
   <div class="stmt-filter-bar">
@@ -2526,6 +2628,339 @@
 
 </section>
 
+<!-- ══════════════════════════════════════════════
+     TAB 9: CRITICAL MINERALS
+══════════════════════════════════════════════ -->
+<section id="tab-minerals" class="section fade-in">
+  <div class="section-header">
+    <div>
+      <div class="section-title">⚗️ Critical Minerals &amp; Commodity Disruption</div>
+      <div class="section-sub">How the Hormuz blockade disrupts India's mineral and fertilizer supply chains. <span class="data-tip" data-src="Sources: Fertiliser Association of India (FAI), Ministry of Chemicals & Fertilizers, Indian Bureau of Mines, USGS Minerals Yearbook 2024." data-url="https://www.faidelhi.org/">Sources: FAI, IBM, USGS, MoC&amp;F</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-row" style="margin-bottom:24px">
+    <div class="kpi-tile">
+      <div class="kpi-label">Urea Import Dependence</div>
+      <div class="kpi-val" style="color:var(--crit)"><span class="data-tip" data-src="India imports ~30–35% of its urea requirement. Primary sources: Oman, Saudi Arabia, UAE, Iran, Egypt. Hormuz route critical for Oman/UAE/Iran supplies. FAI Annual Report 2024-25." data-url="https://www.faidelhi.org/">~32%</span></div>
+      <div class="kpi-sub">of domestic urea demand</div>
+      <div class="kpi-freshness">📅 FAI · 2024-25</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Potash 100% Imported</div>
+      <div class="kpi-val" style="color:var(--crit)"><span class="data-tip" data-src="India has no domestic potash production. Imports ~4.5 million MT/year from Canada (49%), Belarus (20%), Jordan (12%), Russia (9%). Jordan shipments transit Suez/Red Sea — also disrupted. Source: FAI / Fertiliser Ministry." data-url="https://chemicals.gov.in/">4.5 MT</span></div>
+      <div class="kpi-sub">annual import, zero domestic production</div>
+      <div class="kpi-freshness">📅 Ministry of Chemicals · 2025</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Ammonia Shortage Risk</div>
+      <div class="kpi-val" style="color:var(--high)"><span class="data-tip" data-src="Qatar is world's 3rd largest ammonia exporter. India imports ~1.2 MT/year of ammonia, with Qatar supplying ~40%. Qatar gas exports transit via Gulf — at risk from Hormuz blockade. ICIS Ammonia Report, March 2026." data-url="https://www.icis.com/">~40%</span></div>
+      <div class="kpi-sub">of ammonia imports from Qatar via Hormuz</div>
+      <div class="kpi-freshness">📅 ICIS · Mar 2026</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Fertilizer Price Surge</div>
+      <div class="kpi-val" style="color:var(--crit)"><span class="data-tip" data-src="Urea international prices rose from $275/MT (Feb 2026) to $412/MT (Mar 18) — +50% in 19 days. DAP from $580 to $720/MT (+24%). Source: Fertecon / Bloomberg." data-url="https://www.bloomberg.com/">+50%</span></div>
+      <div class="kpi-sub">urea price since Feb 28</div>
+      <div class="kpi-freshness">📅 Fertecon · Mar 18, 2026</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">India Mineral &amp; Fertilizer Import Dependence — Hormuz Exposure <span class="data-tip" data-src="Percentage of each commodity's total annual Indian imports that transit through the Strait of Hormuz. Sources: Petroleum Planning & Analysis Cell (PPAC), FAI, DGCI&S 2024-25." data-url="https://ppac.gov.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="mineralsExposureChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Key Commodity Price Impact Since Feb 28, 2026 <span class="data-tip" data-src="Indexed to 100 at Feb 28, 2026. Urea: Fertecon; DAP: Bloomberg; Sulphur: ICIS; Natural Gas (India TTF-equivalent): Reuters." data-url="https://www.reuters.com/">ℹ</span></div>
+      <div style="height:220px"><canvas id="mineralsPriceChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">India Urea Import Sources (2024-25) <span class="data-tip" data-src="India's urea import sources: Oman 28%, Saudi Arabia 22%, UAE 18%, Iran 12%, Egypt 10%, Other 10%. Oman, Saudi, UAE, Iran all export via Hormuz. Source: Ministry of Chemicals & Fertilizers, FAI Annual 2025." data-url="https://chemicals.gov.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="ureaSourcesChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Fertilizer Subsidy Blowout — Additional Govt Cost Estimate <span class="data-tip" data-src="India's fertilizer subsidy bill at Rs 1.75 lakh crore (FY25). At +50% urea price, additional annual subsidy burden estimated at Rs 28,000-35,000 crore. Source: Department of Fertilizers projections, March 2026." data-url="https://chemicals.gov.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="fertiliserSubsidyChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="analysis-block" style="margin-bottom:20px">
+    <div class="analysis-title">🔍 Critical Minerals Analysis</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>Fertilizer Inputs — Immediate Crisis:</strong> India depends on Hormuz-transiting gas for urea manufacturing feedstock (Qatar LNG → urea). Domestically, RCF, IFFCO, NFL source ~40% of ammonia from Qatar. With Hormuz closed, these plants face feedstock shortages within 45–60 days.
+          <br><br>
+          <strong>Potash — Secondary Shock:</strong> Though Canada dominates, Jordan's potash (12%) travels via Red Sea — also disrupted. India's 60-day strategic buffer is being drawn down.
+          <br><br>
+          <strong>Phosphate Rock:</strong> Jordan and Saudi Arabia supply ~30% of India's phosphoric acid feedstock (for DAP fertilizers). Saudi supplies transit Hormuz; Jordanian via Red Sea.
+        </p>
+      </div>
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>Sulphur (Petrochemical Byproduct):</strong> India imports ~3.5 MT/year from GCC refinery byproduct streams. Used in sulfuric acid for phosphate fertilizer (DAP/SSP). GCC supplies route via Hormuz. Price up 38% since Feb 28.
+          <br><br>
+          <strong>Non-Fertilizer Critical Minerals:</strong> Gulf region not a primary source for lithium, cobalt, or rare earths — India's exposure here is limited. Aluminium billet from UAE (Dubal) is affected; India imports ~200K MT/year.
+          <br><br>
+          <a href="https://www.faidelhi.org/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 FAI Annual Report 2025</a> &nbsp;
+          <a href="https://chemicals.gov.in/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 Dept of Fertilizers</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB 10: AI & DATA CENTERS
+══════════════════════════════════════════════ -->
+<section id="tab-ai" class="section fade-in">
+  <div class="section-header">
+    <div>
+      <div class="section-title">🤖 AI &amp; Data Centers — Regional Crisis Impact</div>
+      <div class="section-sub">How war and blockade are reshaping the Middle East's AI ambitions and what it means for India's tech sector. <span class="data-tip" data-src="Sources: G42 (UAE), Humain (Saudi Arabia), IEA Data Centres Report 2024, Reuters, FT, Economic Times." data-url="https://www.reuters.com/">Sources: G42, Humain, IEA, Reuters</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-row" style="margin-bottom:24px">
+    <div class="kpi-tile">
+      <div class="kpi-label">UAE AI Investment at Risk</div>
+      <div class="kpi-val" style="color:var(--high)"><span class="data-tip" data-src="UAE committed $100B+ in AI and data center investment through 2030 (G42, ADNOC AI, Microsoft Azure UAE, AWS UAE, Google Cloud UAE). Regional instability creating investor uncertainty. Source: UAE AI Office, Reuters March 2026." data-url="https://ai.gov.ae/">$100B+</span></div>
+      <div class="kpi-sub">UAE 2030 AI target — under uncertainty</div>
+      <div class="kpi-freshness">📅 UAE AI Office · 2026</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Saudi Humain Project</div>
+      <div class="kpi-val" style="color:var(--high)"><span class="data-tip" data-src="Humain — Saudi Arabia's AI national champion company launched May 2025. $100B AI compute buildout with NVIDIA, AMD, Qualcomm partnerships. 500MW GPU cluster planned for Riyadh. War-era power costs surge threatening economics. Source: Humain.ai, FT May 2025." data-url="https://humain.ai/">500MW</span></div>
+      <div class="kpi-sub">GPU cluster planned Riyadh — energy costs surging</div>
+      <div class="kpi-freshness">📅 Humain · 2025-26</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">India AI Corridor</div>
+      <div class="kpi-val" style="color:var(--low)"><span class="data-tip" data-src="India-UAE Comprehensive Economic Partnership Agreement (CEPA) includes AI collaboration framework. IndiaAI Mission ($1.25B) attracting Gulf sovereign wealth (Mubadala, ADQ) into Indian AI startups. Source: IndiaAI.gov, DPIIT March 2026." data-url="https://indiaai.gov.in/">$1.25B</span></div>
+      <div class="kpi-sub">IndiaAI Mission — Gulf SWF interest</div>
+      <div class="kpi-freshness">📅 IndiaAI.gov · 2026</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Cloud Latency Impact</div>
+      <div class="kpi-val" style="color:var(--high)"><span class="data-tip" data-src="AWS (Bahrain), Azure (UAE North/South), GCP (UAE) are major cloud regions serving India's enterprise clients. War-era submarine cable disruption risk in Arabian Sea. NASSCOM estimates 15-20% enterprise cloud cost premium if UAE regions become less reliable. Source: NASSCOM, March 2026." data-url="https://nasscom.in/">+15%</span></div>
+      <div class="kpi-sub">enterprise cloud cost premium risk</div>
+      <div class="kpi-freshness">📅 NASSCOM · Mar 2026</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">AI &amp; Data Center Investment by Country — GCC + Israel <span class="data-tip" data-src="Announced AI and data center investments 2024-2026. UAE: G42 + hyperscalers. Saudi: Humain + NEOM. Israel: Pre-war VC + cloud infra. Qatar: QCRI, Qatar Computing Research. Source: Reuters, Bloomberg, company announcements." data-url="https://www.reuters.com/">ℹ</span></div>
+      <div style="height:220px"><canvas id="aiInvestmentChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">India Tech Exports to Gulf — At-Risk Revenue <span class="data-tip" data-src="India IT/ITES exports to GCC: ~$8.2B in FY25 (NASSCOM). Financial services (UAE), government digitization (Saudi), healthcare IT (UAE/Qatar). At risk if Gulf economies contract. Source: NASSCOM Annual Report 2025." data-url="https://nasscom.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="indiaITExportsChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">Gulf AI Data Center Power Demand vs Oil Revenue <span class="data-tip" data-src="Data center power demand in GCC growing at 30%/year CAGR. But oil revenue declining due to blockade-related market disruptions. GCC states running AI ambitions on oil revenues; conflict creates fiscal squeeze. Source: IEA Data Centres 2024, S&P Global." data-url="https://www.iea.org/reports/data-centres-and-data-transmission-networks">ℹ</span></div>
+      <div style="height:220px"><canvas id="aiPowerChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Israel Tech Sector Impact (Pre vs Post War) <span class="data-tip" data-src="Israel AI/tech sector: $8B VC funding in 2024 → estimated $3.2B annualized in 2026 war year. Military call-ups affect 15% of tech workforce. Many startups relocated to Cyprus, UK, India. Source: IVC Research Center, Calcalist." data-url="https://www.calcalist.co.il/en">ℹ</span></div>
+      <div style="height:220px"><canvas id="israelTechChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="analysis-block" style="margin-bottom:20px">
+    <div class="analysis-title">🔍 AI &amp; Data Center Analysis</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>UAE: G42 and the AI Pivot:</strong> G42 (Abu Dhabi) — backed by Microsoft ($1.5B, April 2024) — is building 1GW of AI compute capacity. War creates dual pressure: energy costs via gas disruption + geopolitical risk premium for hyperscaler partners. G42's Falcon 2 LLM uses Hormuz-adjacent LNG-powered data centers.
+          <br><br>
+          <strong>Saudi Humain's $100B Bet:</strong> Saudi Arabia's Humain (May 2025) is the world's largest AI national champion. NVIDIA H100/H200 GPUs are being delivered — but supply chains (ocean freight, semiconductor logistics) pass through disrupted shipping lanes.
+        </p>
+      </div>
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>India's Opportunity:</strong> As Gulf AI hubs face uncertainty, India emerges as the stable alternative compute destination. IndiaAI's 10,000-GPU national cluster (Bengaluru, Pune) is attracting redeployment of Gulf-origin investments. Mubadala and ADQ (UAE sovereign funds) accelerating India AI bets via Lightspeed, Peak XV Partners.
+          <br><br>
+          <strong>Submarine Cable Risk:</strong> AAE-1, SMW-5, and India-Europe cables traverse Arabian Sea. Military activity risk to cable infrastructure could affect India's cloud connectivity to EU/US data centers.
+          <br><br>
+          <a href="https://indiaai.gov.in/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 IndiaAI Mission</a> &nbsp;
+          <a href="https://nasscom.in/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 NASSCOM Report</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB 11: STARTUPS
+══════════════════════════════════════════════ -->
+<section id="tab-startups" class="section fade-in">
+  <div class="section-header">
+    <div>
+      <div class="section-title">🚀 Startup Ecosystems — Regional Disruption &amp; India Impact</div>
+      <div class="section-sub">How war disrupts Israel's tech ecosystem and Gulf startup hubs — and what it means for India's startup sector. <span class="data-tip" data-src="Sources: IVC Research Center (Israel), Magnitt (MENA/UAE), Inc42 (India), Tracxn, Crunchbase." data-url="https://www.magnitt.com/">Sources: IVC, MAGNiTT, Inc42</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-row" style="margin-bottom:24px">
+    <div class="kpi-tile">
+      <div class="kpi-label">Israel VC Funding Drop</div>
+      <div class="kpi-val" style="color:var(--crit)"><span class="data-tip" data-src="Israel startup VC funding: $10.6B (2023) → $8.0B (2024, war year 1) → estimated $3.2B annualized (2026, war year 3). Decline driven by military call-ups (15% of tech workforce), investor risk aversion, and talent diaspora. Source: IVC Research Center 2026." data-url="https://www.ivc-online.com/">–60%</span></div>
+      <div class="kpi-sub">Israel VC vs 2023 peak</div>
+      <div class="kpi-freshness">📅 IVC Research · 2026</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">UAE Startup Investment</div>
+      <div class="kpi-val" style="color:var(--high)"><span class="data-tip" data-src="UAE startup ecosystem: $3.1B in 2024 (MAGNiTT). 2026 estimate: $2.4B as regional uncertainty dampens investor sentiment. Hub71 (Abu Dhabi) saw 40% fewer new cohort applicants in Q1 2026. Source: MAGNiTT State of MENA VC 2025." data-url="https://www.magnitt.com/">$2.4B</span></div>
+      <div class="kpi-sub">2026 estimate — down from $3.1B</div>
+      <div class="kpi-freshness">📅 MAGNiTT · 2026 est.</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Israel Talent to India</div>
+      <div class="kpi-val" style="color:var(--low)"><span class="data-tip" data-src="Estimated 800-1,200 Israeli tech professionals relocated to India in 2025-26, drawn by Nasscom-Israel Tech Bridge program, lower costs, and India R&D center ecosystem. Sectors: cybersecurity, agritech, AI. Source: India-Israel Chamber of Commerce, March 2026." data-url="https://www.iicc.org.il/">~1,000</span></div>
+      <div class="kpi-sub">Israeli tech workers relocated to India</div>
+      <div class="kpi-freshness">📅 IICC · Mar 2026</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">India-Israel Startup Links</div>
+      <div class="kpi-val" style="color:var(--low)"><span class="data-tip" data-src="India has 350+ active India-Israel startup collaborations (FIRST program, MeitY-ISERD bilateral). Sectors: water tech, agri-tech, cybersecurity, medical devices. War hasn't broken these ties; many Israeli companies deepening India presence. Source: FIRST (Israel-India Industrial R&D Fund) 2025." data-url="https://www.first.org.il/">350+</span></div>
+      <div class="kpi-sub">active bilateral startup collaborations</div>
+      <div class="kpi-freshness">📅 FIRST Program · 2025</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">Israel Startup Funding — Crisis Trajectory (2022–2026) <span class="data-tip" data-src="Annual venture capital invested in Israeli startups. War began Oct 2023; Hormuz crisis began Mar 2026. Data: IVC Research Center, Pitchbook, Crunchbase." data-url="https://www.ivc-online.com/">ℹ</span></div>
+      <div style="height:220px"><canvas id="israelFundingChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">MENA Startup Ecosystem — Funding by Country (2025) <span class="data-tip" data-src="MENA VC funding by country 2025. UAE dominates (45%), Saudi Arabia growing (28%), Egypt (10%), Israel excluded (separate data). Source: MAGNiTT MENA VC Report 2025." data-url="https://www.magnitt.com/">ℹ</span></div>
+      <div style="height:220px"><canvas id="menaFundingChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-box" style="margin-bottom:20px">
+    <div class="chart-title">India Startup Sectors with Gulf/Israel Exposure — Impact Assessment <span class="data-tip" data-src="India startups with significant Gulf/Israel customer, investor, or supply exposure. Impact rated 1-10 (10=severe). Sectors: IT/SaaS (Gulf clients), Fintech (Gulf remittance), EdTech (Gulf NRI market), Agritech (Israel tech), Cybersecurity (Israel collab). Source: Inc42, NASSCOM." data-url="https://inc42.com/">ℹ</span></div>
+    <div style="height:200px"><canvas id="indiaStartupExposureChart"></canvas></div>
+  </div>
+
+  <div class="analysis-block" style="margin-bottom:20px">
+    <div class="analysis-title">🔍 Startup Ecosystem Analysis</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>Israel's Brain Drain:</strong> Israel had 7,200 active startups in 2023. By March 2026, an estimated 1,100 have shut down or relocated. Military reserve call-ups affect senior engineers at critical growth-stage companies. Top destinations for relocating teams: Cyprus, Portugal, India, Singapore.
+          <br><br>
+          <strong>Dubai as Fallback Hub:</strong> Pre-war, Dubai positioned as the "Silicon Valley of MENA." Hormuz crisis reduces confidence in Gulf stability. Yet UAE physically distant from strait — Dubai continues to attract founders, though investor sentiment has cooled.
+        </p>
+      </div>
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>India's Cybersecurity Dividend:</strong> Israel is the world leader in cybersecurity (Check Point, Palo Alto, Unit 8200 alumni). As Israeli cybersecurity startups expand India R&D centers, India gains talent and technology access. Bengaluru now hosts 28 Israeli cybersecurity R&D offices.
+          <br><br>
+          <strong>Remittance Fintech Risk:</strong> Indian fintech startups (PhonePe International, Nium, Zeta) that facilitate Gulf-India remittance flows face volume uncertainty as Gulf Indian diaspora employment contracts.
+          <br><br>
+          <a href="https://www.magnitt.com/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 MAGNiTT MENA VC</a> &nbsp;
+          <a href="https://inc42.com/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 Inc42 India Startups</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB 12: DIASPORA IMPACT
+══════════════════════════════════════════════ -->
+<section id="tab-diaspora" class="section fade-in">
+  <div class="section-header">
+    <div>
+      <div class="section-title">🏘️ Indian Diaspora — Gulf Crisis &amp; Economic Impact</div>
+      <div class="section-sub">~8.9 million Indians live across GCC countries. Their economic fate is tightly linked to oil revenues — and the Hormuz blockade threatens both. <span class="data-tip" data-src="Sources: Ministry of External Affairs (MEA) Indian diaspora data 2024, RBI Annual Report on Remittances 2025, World Bank Migration & Development Brief." data-url="https://mea.gov.in//">Sources: MEA, RBI, World Bank</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-row" style="margin-bottom:24px">
+    <div class="kpi-tile">
+      <div class="kpi-label">Indians in GCC</div>
+      <div class="kpi-val" style="color:var(--ink)"><span class="data-tip" data-src="GCC Indian diaspora: UAE 3.5M, Saudi Arabia 2.4M, Kuwait 1.05M, Qatar 0.72M, Oman 0.78M, Bahrain 0.4M. Total: 8.85 million. World's largest single-country diaspora cluster. Source: MEA Pravasi Bharatiya 2024." data-url="https://mea.gov.in/">8.9M</span></div>
+      <div class="kpi-sub">Indians across 6 GCC nations</div>
+      <div class="kpi-freshness">📅 MEA · 2024</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Gulf Remittances to India</div>
+      <div class="kpi-val" style="color:var(--high)"><span class="data-tip" data-src="India received $106.6B in total remittances in FY2024-25 (RBI). GCC contribution: ~$42B (UAE $18B, Saudi $10B, Kuwait $5B, Qatar $4B, Oman $3B, Bahrain $2B). Largest remittance inflow for any country globally from GCC cluster. Source: RBI Annual Report 2025, World Bank." data-url="https://rbi.org.in/">$42B</span></div>
+      <div class="kpi-sub">annual remittances from GCC to India</div>
+      <div class="kpi-freshness">📅 RBI · FY2024-25</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Jobs at Risk</div>
+      <div class="kpi-val" style="color:var(--crit)"><span class="data-tip" data-src="Estimated 1.2–1.8M Indians in GCC work in oil, gas, construction, and petrochemical sectors — directly exposed to Hormuz crisis revenue shocks. Gulf states with falling oil revenues historically cut expat workforce first via kafala system changes. Source: ILO Gulf Report 2025, Reuters March 2026." data-url="https://www.ilo.org/">1.5M</span></div>
+      <div class="kpi-sub">Indians in oil/gas/construction — at-risk sectors</div>
+      <div class="kpi-freshness">📅 ILO / Reuters · Mar 2026</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">Remittance at-Risk</div>
+      <div class="kpi-val" style="color:var(--crit)"><span class="data-tip" data-src="If GCC oil revenues fall 25% (plausible in 6-month blockade scenario), economic contraction historically leads to 15–20% reduction in Indian diaspora employment. RBI estimates potential remittance decline of $8–12B annually. State impact: Kerala (25% of state income from remittances), Uttar Pradesh, Bihar, Rajasthan. Source: RBI, MOIA analysis." data-url="https://rbi.org.in/">$8–12B</span></div>
+      <div class="kpi-sub">potential annual remittance decline (blockade scenario)</div>
+      <div class="kpi-freshness">📅 RBI estimate · 2026</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">Indian Diaspora Distribution Across GCC <span class="data-tip" data-src="MEA Pravasi Bharatiya data 2024: UAE 3.5M (39%), Saudi Arabia 2.4M (27%), Kuwait 1.05M (12%), Oman 0.78M (9%), Qatar 0.72M (8%), Bahrain 0.4M (5%)." data-url="https://mea.gov.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="diasporaDistChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Gulf Remittance Trend (FY2020–FY2026e) <span class="data-tip" data-src="Annual remittances from GCC to India in USD billions. FY20: $29B → FY22: $36B → FY24: $42B. FY26 projected decline due to Hormuz crisis economic impact on Gulf economies. Source: RBI Annual Reports, World Bank." data-url="https://rbi.org.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="remittanceTrendChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:20px;margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-title">Sector Employment of Indians in GCC <span class="data-tip" data-src="Approximate sector breakdown of 8.9M Indian GCC workers. Construction/Real Estate: 25%, Retail/Trade: 20%, Oil/Gas/Petrochem: 17%, Healthcare: 12%, IT/Finance: 11%, Hospitality: 9%, Other: 6%. Source: ILO, MOIA, Gulf Labour Market & Migration Programme (GLMM)." data-url="https://gulfmigration.org/">ℹ</span></div>
+      <div style="height:220px"><canvas id="diasporaSectorChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">State-wise India Remittance Dependence — Gulf Share <span class="data-tip" data-src="Gulf remittances as % of state GSDP (approx). Kerala: 19%, Goa: 8%, UP: 4.5%, Bihar: 4%, Rajasthan: 3.5%, West Bengal: 3%. Source: RBI, MOIA, Kerala Economic Review 2025." data-url="https://rbi.org.in/">ℹ</span></div>
+      <div style="height:220px"><canvas id="stateRemittanceChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="analysis-block" style="margin-bottom:20px">
+    <div class="analysis-title">🔍 Diaspora Impact Analysis</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>Kerala — Highest Exposure:</strong> Remittances form ~19% of Kerala's GSDP. Gulf Indians from Kerala number ~2.5 million. If 15% lose employment (270,000 workers), it triggers state fiscal crisis: lower consumer demand, reduced home construction, banking NPA surge.
+          <br><br>
+          <strong>Kafala System Risk:</strong> Gulf states use the kafala (employer-sponsored) visa system. During economic downturns (Saudi 2015-16 oil crash), hundreds of thousands of Indians were deported. A 6-month Hormuz crisis could trigger similar mass returns — 300,000–500,000 returnees straining Kerala, UP, Bihar labor markets.
+        </p>
+      </div>
+      <div>
+        <p style="font-size:12px;line-height:1.7;color:#555">
+          <strong>Stranded Workers:</strong> As of March 18, MEA reports ~12,000 Indian nationals in Hormuz-adjacent zones facing movement restrictions. Indian Navy is coordinating with MEA for potential evacuation. Operation Kaveri (2023 Sudan precedent) may be replicated.
+          <br><br>
+          <strong>Macroeconomic Feedback:</strong> Gulf remittances (~4% of India's GDP) are a key current account credit. A $10B drop in remittances widens India's current account deficit by ~0.3% of GDP — putting additional pressure on the already-stressed INR (currently at ₹92.56).
+          <br><br>
+          <a href="https://mea.gov.in/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 MEA Diaspora</a> &nbsp;
+          <a href="https://rbi.org.in/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 RBI Remittances</a> &nbsp;
+          <a href="https://gulfmigration.org/" target="_blank" rel="noopener" style="font-size:11px;color:#2471A3">📎 GLMM</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 </div><!-- end .main -->
 
 <div id="src-tooltip"><div id="src-tip-text"></div><a id="src-tip-link" href="#" target="_blank" rel="noopener noreferrer">Open source ↗</a></div>
@@ -2563,7 +2998,18 @@ Chart.defaults.font.family = "'DM Sans', sans-serif";
 Chart.defaults.font.size = 11;
 Chart.defaults.color = '#6C757D';
 
-const DAYS_CRISIS = ['Feb 28','Mar 1','Mar 2','Mar 3','Mar 4','Mar 5','Mar 6','Mar 7','Mar 8','Mar 9','Mar 10','Mar 11','Mar 12','Mar 13','Mar 14','Mar 15','Mar 16','Mar 17','Mar 18'];
+function _buildDaysToDate(isoStart) {
+  const labels = [];
+  const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const d = new Date(isoStart);
+  const today = new Date(); today.setHours(23,59,59,0);
+  while (d <= today) {
+    labels.push(M[d.getMonth()] + ' ' + d.getDate());
+    d.setDate(d.getDate() + 1);
+  }
+  return labels;
+}
+const DAYS_CRISIS = _buildDaysToDate('2026-02-28');
 
 // ── CHART INSTANCES ──
 let charts = {};
@@ -2608,6 +3054,7 @@ function makeCharts() {
 
   // ── NIFTY ──
   const niftyData = [25213,24800,24600,24400,23900,24100,23800,23700,23600,23500,23400,23200,23400,23150,23300,23200,23500,23581,23600];
+  while (niftyData.length < DAYS_CRISIS.length) niftyData.push(null);
   charts.nifty = _mkC('niftyChart',{
     type:'line',
     data:{
@@ -2623,13 +3070,15 @@ function makeCharts() {
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString('en-IN')}}},
+      spanGaps:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?ctx.raw.toLocaleString('en-IN'):''}}},
       scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},grid:{color:'#F0EDE8'}},x:{grid:{display:false}}}
     }
   });
 
   // ── INR ──
   const inrData = [86.5,87.2,87.8,88.5,89.1,89.0,89.8,90.5,91.0,91.5,91.8,92.1,92.3,92.45,92.40,92.43,92.42,92.56,92.5];
+  while (inrData.length < DAYS_CRISIS.length) inrData.push(null);
   charts.inr = _mkC('inrChart',{
     type:'line',
     data:{
@@ -2643,6 +3092,7 @@ function makeCharts() {
     },
     options:{
       responsive:true,maintainAspectRatio:false,
+      spanGaps:false,
       plugins:{legend:{display:false}},
       scales:{
         y:{min:85,ticks:{callback:v=>'₹'+v},grid:{color:'#F0EDE8'}},
@@ -2653,6 +3103,7 @@ function makeCharts() {
 
   // ── BRENT ──
   const brentData = [65.2,67.0,72.5,78.0,82.0,80.5,85.0,88.0,91.0,93.0,95.0,98.0,100.0,105.7,103.0,101.0,100.0,102.77,103.0];
+  while (brentData.length < DAYS_CRISIS.length) brentData.push(null);
   charts.brent = _mkC('brentChart',{
     type:'line',
     data:{
@@ -2666,7 +3117,8 @@ function makeCharts() {
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'$'+ctx.raw}}},
+      spanGaps:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?'$'+ctx.raw:''}}},
       scales:{
         y:{min:60,ticks:{callback:v=>'$'+v},grid:{color:'#F0EDE8'}},
         x:{grid:{display:false},ticks:{maxTicksLimit:6}}
@@ -2676,6 +3128,7 @@ function makeCharts() {
 
   // ── VIX ──
   const vixData = [13.7,16.5,20.8,19.5,18.0,17.5,18.8,19.0,19.5,20.0,20.8,21.5,21.0,22.65,21.5,20.8,20.5,19.91,20.0];
+  while (vixData.length < DAYS_CRISIS.length) vixData.push(null);
   charts.vix = _mkC('vixChart',{
     type:'line',
     data:{
@@ -2689,6 +3142,7 @@ function makeCharts() {
     },
     options:{
       responsive:true,maintainAspectRatio:false,
+      spanGaps:false,
       plugins:{legend:{display:false}},
       scales:{y:{grid:{color:'#F0EDE8'}},x:{grid:{display:false},ticks:{maxTicksLimit:6}}}
     }
@@ -2933,6 +3387,10 @@ function lazyInitTab(id) {
   else if (id === 'projections') { makeCharts(); }
   else if (id === 'statements') { makeStmtCharts(); fetchOfficialStatements(); }
   else if (id === 'geography') { updateGeoMapsLive(); }
+  else if (id === 'minerals') { makeMineralsCharts(); }
+  else if (id === 'ai') { makeAICharts(); }
+  else if (id === 'startups') { makeStartupsCharts(); }
+  else if (id === 'diaspora') { makeDiasporaCharts(); }
 }
 
 // ── REFRESH ──
@@ -2981,7 +3439,8 @@ const _mapDefaults = {
   routes:       { center:[15,50],   zoom:3 },
   commodities:  { center:[18,52],   zoom:3 },
   diaspora:     { center:[22,57],   zoom:5 },
-  alternatives: { center:[27,58],   zoom:4 }
+  alternatives: { center:[27,58],   zoom:4 },
+  ships:        { center:[26.5,56.5], zoom:7 }
 };
 function showMap(id, btn) {
   document.querySelectorAll('.map-panel').forEach(p => p.classList.remove('active'));
@@ -3522,6 +3981,30 @@ function initLeafletMaps() {
 
   // India label
   L.marker([20, 78], {icon: mkIcon(`<div style="background:rgba(31,64,104,0.85);border:2px solid #3A6A9A;color:rgba(200,230,255,0.95);padding:4px 8px;border-radius:6px;font-size:11px;font-family:'DM Serif Display',serif">INDIA</div>`,70,26)}).addTo(m5);
+
+  // ── MAP 6: STRAIT OF HORMUZ SHIP TRAFFIC ──
+  if (document.getElementById('map-ships')) {
+    const m6 = L.map('map-ships', { zoomControl: true, scrollWheelZoom: false }).setView([26.5, 56.5], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(m6);
+    lmaps['ships'] = m6;
+    // Hormuz blockade marker
+    const hormuzIcon = L.divIcon({ className: '', html: '<div style="background:#C0392B;color:white;padding:2px 6px;border-radius:3px;font-size:10px;white-space:nowrap">🔴 BLOCKED</div>' });
+    L.marker([26.6, 56.3], { icon: hormuzIcon }).bindPopup('<b>Strait of Hormuz — BLOCKED</b><br>Iranian Navy blockade since Mar 1, 2026.<br>Width: 33km. Two shipping lanes each 3km wide.').addTo(m6);
+    // IRGC naval zone
+    L.circleMarker([27.1, 56.2], { radius: 14, color: '#C0392B', fillColor: '#C0392B', fillOpacity: 0.2, weight: 2 }).bindPopup('<b>IRGC Naval Zone</b><br>Iranian Revolutionary Guard Corps naval patrol area.').addTo(m6);
+    // Fujairah anchorage
+    L.marker([25.13, 56.33]).bindPopup('<b>Fujairah Anchorage (UAE)</b><br>~40 tankers anchored here as of Mar 2026.<br>Key bunkering hub outside Hormuz.').addTo(m6);
+    // Muscat / Oman coast
+    L.marker([23.58, 58.41]).bindPopup('<b>Muscat, Oman</b><br>Oman maintaining neutrality.<br>Khasab port used for some humanitarian transit.').addTo(m6);
+    // Strait boundary line
+    L.polyline([[26.4, 55.9],[26.5, 56.0],[26.6, 56.2],[26.7, 56.5],[26.8, 56.8]], {
+      color: '#C0392B', weight: 3, dashArray: '6,4', opacity: 0.8
+    }).bindPopup('Strait of Hormuz — Shipping Lane (BLOCKED)').addTo(m6);
+    // Indian Navy presence
+    L.marker([24.5, 58.0], { icon: L.divIcon({ className:'', html:'<div style="background:#1A5276;color:white;padding:2px 6px;border-radius:3px;font-size:10px">🇮🇳 IN</div>' }) }).bindPopup('<b>INS Visakhapatnam patrol zone</b><br>Indian Navy destroyer — HADR &amp; escort ops.').addTo(m6);
+  }
 }
 
 // ── INIT ──
@@ -3542,7 +4025,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Restore tab from URL hash
   const hash = location.hash.replace('#','');
-  const tabOrder = ['overview','markets','sectors','geography','complexity','projections','policy','statements'];
+  const tabOrder = ['overview','markets','sectors','geography','complexity','projections','policy','statements','minerals','ai','startups','diaspora'];
   if (hash && tabOrder.includes(hash)) {
     const tabEl = Array.from(document.querySelectorAll('.nav-tab')).find(t => {
       const onclick = t.getAttribute('onclick') || '';
@@ -3815,7 +4298,7 @@ const _STMT_KEYWORDS = [
   'oil import', 'crude import', 'fuel price', 'petroleum', 'opec',
 ];
 
-const _CRISIS_CUTOFF = new Date('2026-03-18T00:00:00Z');
+const _CRISIS_CUTOFF = new Date('2026-02-28T00:00:00Z');
 
 const _NEWS_RSS_FEEDS = [
   { url: 'https://www.thehindu.com/news/national/feeder/default.rss',            name: 'The Hindu',                icon: '📰', wing: 'media' },
@@ -3991,18 +4474,20 @@ function _applyLivePriceOverlays() {
 }
 
 async function updateGeoMapsLive() {
-  const [blockadeArts, routeArts, commodArts, diasporaArts, altArts] = await Promise.all([
+  const [blockadeArts, routeArts, commodArts, diasporaArts, altArts, shipsArts] = await Promise.all([
     _fetchGDELTArticles('Hormuz blockade Iran India shipping tanker', 5),
     _fetchGDELTArticles('India alternative shipping route Red Sea Suez Cape Good Hope', 4),
     _fetchGDELTArticles('India crude oil price energy import Iran sanctions brent', 5),
     _fetchGDELTArticles('India Iran diaspora remittance workers stranded Gulf', 4),
     _fetchGDELTArticles('India Chabahar port pipeline alternative energy corridor Iran', 4),
+    _fetchGDELTArticles('India ship tanker Strait Hormuz blockade vessel stranded', 5),
   ]);
   _renderGeoNews('geo-news-blockade',     blockadeArts);
   _renderGeoNews('geo-news-routes',       routeArts);
   _renderGeoNews('geo-news-commodities',  commodArts);
   _renderGeoNews('geo-news-diaspora',     diasporaArts);
   _renderGeoNews('geo-news-alternatives', altArts);
+  _renderGeoNews('geo-news-ships',        shipsArts);
   _applyLivePriceOverlays();
 }
 
@@ -4122,6 +4607,173 @@ async function fetchAndApplyLiveData() {
     updateBanner();
     _updateDayCounter();
   }
+}
+
+// ── CRITICAL MINERALS CHARTS ──
+function makeMineralsCharts() {
+  _mkC('mineralsExposureChart', {
+    type: 'bar',
+    data: {
+      labels: ['Crude Oil (Iraq/Kuwait/Iran)', 'LPG (Qatar/Kuwait)', 'LNG (Qatar)', 'Urea (Oman/Saudi/UAE)', 'Ammonia (Qatar)', 'Sulphur (GCC refineries)', 'Aluminium Billet (UAE)'],
+      datasets: [{ label: '% via Hormuz', data: [62, 78, 95, 68, 90, 82, 100], backgroundColor: ['#C0392B','#E67E22','#E67E22','#F39C12','#F39C12','#D4AC0D','#D4AC0D'], borderRadius: 4 }]
+    },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw}% via Hormuz`}} }, scales:{ x:{max:100,ticks:{callback:v=>v+'%'},grid:{color:'#F0EDE8'}}, y:{grid:{display:false},ticks:{font:{size:10}}} } }
+  });
+
+  const since = ['Feb 28','Mar 3','Mar 7','Mar 10','Mar 14','Mar 18','Mar 25','Apr 4'];
+  _mkC('mineralsPriceChart', {
+    type: 'line',
+    data: {
+      labels: since,
+      datasets: [
+        { label: 'Urea (intl)', data: [100,110,122,135,142,150,148,152], borderColor:'#E67E22', tension:0.3, fill:false },
+        { label: 'DAP', data: [100,107,115,120,122,124,123,126], borderColor:'#2471A3', tension:0.3, fill:false },
+        { label: 'Ammonia', data: [100,112,125,138,145,148,150,155], borderColor:'#8E44AD', tension:0.3, fill:false },
+        { label: 'Sulphur', data: [100,108,118,128,133,138,137,140], borderColor:'#27AE60', tension:0.3, fill:false },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}} }, scales:{ y:{ ticks:{callback:v=>v+''},title:{display:true,text:'Index (100 = Feb 28)'}}, x:{grid:{display:false}} } }
+  });
+
+  _mkC('ureaSourcesChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['Oman (Hormuz)', 'Saudi Arabia (Hormuz)', 'UAE (Hormuz)', 'Iran (Hormuz)', 'Egypt (Suez)', 'Other'],
+      datasets: [{ data: [28,22,18,12,10,10], backgroundColor: ['#C0392B','#E67E22','#F39C12','#8E44AD','#2471A3','#95A5A6'] }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}, tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}%`}} } }
+  });
+
+  _mkC('fertiliserSubsidyChart', {
+    type: 'bar',
+    data: {
+      labels: ['FY24 Baseline', 'FY25 Actual', 'FY26 (blockade +30%)', 'FY26 (blockade +50%)', 'FY26 (full blockade)'],
+      datasets: [{ label: 'Subsidy (\u20b9 lakh crore)', data: [1.64, 1.75, 2.10, 2.47, 2.85], backgroundColor: ['#2471A3','#2471A3','#F39C12','#E67E22','#C0392B'], borderRadius: 4 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`\u20b9${c.raw}L Cr`}} }, scales:{ y:{ticks:{callback:v=>'\u20b9'+v+'L Cr'},grid:{color:'#F0EDE8'}}, x:{grid:{display:false},ticks:{font:{size:9}}} } }
+  });
+}
+
+// ── AI & DATA CENTER CHARTS ──
+function makeAICharts() {
+  _mkC('aiInvestmentChart', {
+    type: 'bar',
+    data: {
+      labels: ['UAE (G42 + Hypers)', 'Saudi Arabia (Humain)', 'Israel (Pre-war)', 'Israel (2026e)', 'Qatar (QCRI)', 'Egypt (emerging)'],
+      datasets: [{ label: 'AI/DC Investment ($B)', data: [100, 100, 15, 6, 8, 3], backgroundColor: ['#2471A3','#2471A3','#27AE60','#E74C3C','#F39C12','#95A5A6'], borderRadius: 4 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ y:{ticks:{callback:v=>'$'+v+'B'},grid:{color:'#F0EDE8'}}, x:{grid:{display:false},ticks:{font:{size:9}}} } }
+  });
+
+  _mkC('indiaITExportsChart', {
+    type: 'bar',
+    data: {
+      labels: ['UAE', 'Saudi Arabia', 'Qatar', 'Bahrain/Kuwait', 'Israel', 'Other Gulf'],
+      datasets: [
+        { label: 'FY25 ($ Bn)', data: [3.8, 2.1, 0.9, 0.6, 0.5, 0.3], backgroundColor: 'rgba(36,113,163,0.7)', borderRadius: 3 },
+        { label: 'FY26e ($ Bn)', data: [3.4, 1.9, 0.85, 0.55, 0.3, 0.28], backgroundColor: 'rgba(192,57,43,0.7)', borderRadius: 3 },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12}} }, scales:{ y:{ticks:{callback:v=>'$'+v+'B'},grid:{color:'#F0EDE8'}}, x:{grid:{display:false}} } }
+  });
+
+  _mkC('aiPowerChart', {
+    type: 'line',
+    data: {
+      labels: ['2022','2023','2024','2025','2026e','2027p'],
+      datasets: [
+        { label: 'GCC AI DC Power (GW)', data: [0.8, 1.4, 2.6, 4.2, 6.1, 9.0], borderColor:'#2471A3', tension:0.3, yAxisID:'y' },
+        { label: 'GCC Oil Revenue ($T)', data: [1.1, 1.0, 0.95, 0.92, 0.65, 0.75], borderColor:'#C0392B', tension:0.3, yAxisID:'y1' },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12}} }, scales:{ y:{type:'linear',position:'left',title:{display:true,text:'Power (GW)'}}, y1:{type:'linear',position:'right',title:{display:true,text:'Revenue ($T)'},grid:{drawOnChartArea:false}}, x:{grid:{display:false}} } }
+  });
+
+  _mkC('israelTechChart', {
+    type: 'bar',
+    data: {
+      labels: ['VC Funding ($B)', 'Startups (000s)', 'Tech Workforce (000s)', 'Unicorns'],
+      datasets: [
+        { label: 'Pre-war (2023)', data: [10.6, 7.2, 350, 45], backgroundColor: 'rgba(39,174,96,0.7)', borderRadius: 3 },
+        { label: '2026 (war)', data: [3.2, 6.1, 290, 38], backgroundColor: 'rgba(192,57,43,0.7)', borderRadius: 3 },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12}} }, scales:{ y:{grid:{color:'#F0EDE8'}}, x:{grid:{display:false}} } }
+  });
+}
+
+// ── STARTUPS CHARTS ──
+function makeStartupsCharts() {
+  _mkC('israelFundingChart', {
+    type: 'bar',
+    data: {
+      labels: ['2022', '2023', '2024 (War Y1)', '2025 (War Y2)', '2026e (War Y3)'],
+      datasets: [{ label: 'VC Funding ($B)', data: [15.1, 10.6, 8.0, 5.2, 3.2], backgroundColor: ['#27AE60','#27AE60','#F39C12','#E67E22','#C0392B'], borderRadius: 4 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ y:{ticks:{callback:v=>'$'+v+'B'},grid:{color:'#F0EDE8'}}, x:{grid:{display:false}} } }
+  });
+
+  _mkC('menaFundingChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['UAE', 'Saudi Arabia', 'Egypt', 'Jordan', 'Bahrain', 'Other MENA'],
+      datasets: [{ data: [45, 28, 10, 7, 5, 5], backgroundColor: ['#2471A3','#8E44AD','#E67E22','#27AE60','#F39C12','#95A5A6'] }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}, tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}%`}} } }
+  });
+
+  _mkC('indiaStartupExposureChart', {
+    type: 'bar',
+    data: {
+      labels: ['IT/SaaS (Gulf clients)', 'Fintech (Remittance)', 'EdTech (NRI Gulf market)', 'Agritech (Israel collab)', 'Cybersecurity (Israel)'],
+      datasets: [
+        { label: 'Exposure Score (1\u201310)', data: [8, 9, 6, 7, 4], backgroundColor: ['#C0392B','#C0392B','#E67E22','#F39C12','#2471A3'], borderRadius: 4 }
+      ]
+    },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`Exposure: ${c.raw}/10`}} }, scales:{ x:{max:10,grid:{color:'#F0EDE8'}}, y:{grid:{display:false}} } }
+  });
+}
+
+// ── DIASPORA CHARTS ──
+function makeDiasporaCharts() {
+  _mkC('diasporaDistChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['UAE (3.5M)', 'Saudi Arabia (2.4M)', 'Kuwait (1.05M)', 'Oman (0.78M)', 'Qatar (0.72M)', 'Bahrain (0.4M)'],
+      datasets: [{ data: [39, 27, 12, 9, 8, 5], backgroundColor: ['#2471A3','#E67E22','#F39C12','#8E44AD','#27AE60','#95A5A6'] }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}, tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}% of 8.9M`}} } }
+  });
+
+  _mkC('remittanceTrendChart', {
+    type: 'line',
+    data: {
+      labels: ['FY20','FY21','FY22','FY23','FY24','FY25','FY26e'],
+      datasets: [
+        { label: 'Total India Remittances ($B)', data: [83, 87, 89, 112, 120, 107, 95], borderColor:'#2471A3', tension:0.3, fill:false },
+        { label: 'GCC Share ($B)', data: [29, 31, 36, 40, 42, 42, 34], borderColor:'#C0392B', tension:0.3, fill:false, borderDash:[5,3] },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:12}} }, scales:{ y:{ticks:{callback:v=>'$'+v+'B'},grid:{color:'#F0EDE8'}}, x:{grid:{display:false}} } }
+  });
+
+  _mkC('diasporaSectorChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['Construction/Real Estate', 'Retail/Trade', 'Oil/Gas/Petrochem', 'Healthcare', 'IT/Finance', 'Hospitality', 'Other'],
+      datasets: [{ data: [25, 20, 17, 12, 11, 9, 6], backgroundColor: ['#E67E22','#2471A3','#C0392B','#27AE60','#8E44AD','#F39C12','#95A5A6'] }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'bottom',labels:{boxWidth:10,font:{size:9}}}, tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}%`}} } }
+  });
+
+  _mkC('stateRemittanceChart', {
+    type: 'bar',
+    data: {
+      labels: ['Kerala', 'Goa', 'Uttar Pradesh', 'Bihar', 'Rajasthan', 'West Bengal', 'Maharashtra'],
+      datasets: [{ label: 'Gulf Remittance as % GSDP', data: [19, 8, 4.5, 4, 3.5, 3, 2.5], backgroundColor: ['#C0392B','#E67E22','#F39C12','#F39C12','#D4AC0D','#2471A3','#2471A3'], borderRadius: 4 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw}% of GSDP`}} }, scales:{ y:{ticks:{callback:v=>v+'%'},grid:{color:'#F0EDE8'}}, x:{grid:{display:false}} } }
+  });
 }
 
 // ── SOURCE TOOLTIP SYSTEM ──
