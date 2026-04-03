@@ -3070,7 +3070,7 @@ function makeCharts() {
       }]
     },
     options:{
-      responsive:true,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?ctx.raw.toLocaleString('en-IN'):''}}},
       scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},grid:{color:'#F0EDE8'}},x:{grid:{display:false}}}
     }
@@ -3091,10 +3091,10 @@ function makeCharts() {
       }]
     },
     options:{
-      responsive:true,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{display:false}},
       scales:{
-        y:{min:85,ticks:{callback:v=>'₹'+v},grid:{color:'#F0EDE8'}},
+        y:{ticks:{callback:v=>'₹'+v},grid:{color:'#F0EDE8'}},
         x:{grid:{display:false}}
       }
     }
@@ -3115,7 +3115,7 @@ function makeCharts() {
       }]
     },
     options:{
-      responsive:true,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw!=null?'$'+ctx.raw:''}}},
       scales:{
         y:{min:60,ticks:{callback:v=>'$'+v},grid:{color:'#F0EDE8'}},
@@ -3139,7 +3139,7 @@ function makeCharts() {
       }]
     },
     options:{
-      responsive:true,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{display:false}},
       scales:{y:{grid:{color:'#F0EDE8'}},x:{grid:{display:false},ticks:{maxTicksLimit:6}}}
     }
@@ -3168,19 +3168,27 @@ function makeCharts() {
   });
 
   // ── INFLATION ──
+  // Inflation chart: confirmed data (Sep 25–Feb 26) + estimated (Mar 26–onwards) as dashed
+  // Labels include context so users know which portion is confirmed vs estimated
   charts.inflation = _mkC('inflationChart',{
     type:'line',
     data:{
-      labels:['Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26 (est)','Apr 26 (proj)'],
+      labels:['Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26'],
       datasets:[
-        {label:'CPI',data:[4.9,4.2,3.5,3.0,2.75,3.21,3.8,4.5],borderColor:'#2471A3',backgroundColor:'rgba(36,113,163,0.08)',tension:0.3,fill:true,pointRadius:3},
-        {label:'WPI',data:[2.1,1.8,1.5,1.2,1.6,2.13,2.8,3.5],borderColor:'#E67E22',backgroundColor:'rgba(230,126,34,0.06)',tension:0.3,fill:true,pointRadius:3,borderDash:[4,2]},
-        {label:'RBI Target',data:[4,4,4,4,4,4,4,4],borderColor:'#27AE60',borderDash:[6,3],pointRadius:0,borderWidth:1.5,fill:false}
+        // Confirmed CPI (solid) — data points through Feb 26; null thereafter (dashed dataset takes over)
+        {label:'CPI (confirmed)',data:[4.9,4.2,3.5,3.0,2.75,3.21,null,null,null],borderColor:'#2471A3',backgroundColor:'rgba(36,113,163,0.08)',tension:0.3,fill:true,pointRadius:3,spanGaps:false},
+        // Estimated CPI (dashed) — starts from Feb 26 anchor so lines connect cleanly
+        {label:'CPI (estimated)',data:[null,null,null,null,null,3.21,3.8,4.5,4.8],borderColor:'#2471A3',borderDash:[5,4],tension:0.3,fill:false,pointRadius:2,spanGaps:false},
+        // Confirmed WPI (solid)
+        {label:'WPI (confirmed)',data:[2.1,1.8,1.5,1.2,1.6,2.13,null,null,null],borderColor:'#E67E22',tension:0.3,fill:false,pointRadius:3,spanGaps:false},
+        // Estimated WPI (dashed)
+        {label:'WPI (estimated)',data:[null,null,null,null,null,2.13,2.8,3.5,3.8],borderColor:'#E67E22',borderDash:[5,4],tension:0.3,fill:false,pointRadius:2,spanGaps:false},
+        {label:'RBI Target',data:[4,4,4,4,4,4,4,4,4],borderColor:'#27AE60',borderDash:[6,3],pointRadius:0,borderWidth:1.5,fill:false}
       ]
     },
     options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{boxWidth:12,font:{size:10}}}},
+      responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{labels:{boxWidth:12,font:{size:10},filter:item=>!item.text.includes('(estimated)')||item.datasetIndex===1}}},
       scales:{
         y:{min:0,max:6,ticks:{callback:v=>v+'%'},grid:{color:'#F0EDE8'}},
         x:{grid:{display:false},ticks:{maxTicksLimit:6}}
@@ -3396,6 +3404,7 @@ function refreshDashboard(btn) {
   Promise.all([fetchAndApplyLiveData(), fetchOfficialStatements(), updateGeoMapsLive()]).finally(() => {
     makeCharts();
     makeStmtCharts();
+    updateTimeline();
     btn.classList.remove('spinning');
   });
 }
@@ -3667,10 +3676,8 @@ function makeAutoCharts() {
 }
 
 function makeNewMarketCharts() {
-  ['sectorEquityChart','forexChart'].forEach(id => { const c = Chart.getChart(id); if(c) c.destroy(); });
-
-  const c1 = document.getElementById('sectorEquityChart');
-  if (c1) new Chart(c1, {
+  // Use _mkC throughout — it properly destroys any existing instance before creating a new one
+  _mkC('sectorEquityChart', {
     type: 'bar',
     data: {
       labels: ['Coal India','IT (Wipro)','Pharma','PSU Banks','Nifty50','LPG/OMCs','PSU Energy','Auto/EV','Hospitality','Infra (L&T)'],
@@ -3679,14 +3686,13 @@ function makeNewMarketCharts() {
         backgroundColor:['#1A8449','#27AE60','#27AE60','#E67E22','#E67E22','#C0392B','#C0392B','#C0392B','#7B241C','#7B241C'],
         borderRadius:4 }]
     },
-    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}} },
       scales:{ x:{ticks:{callback:v=>v+'%'},grid:{color:'#F0EDE8'}}, y:{grid:{display:false}} }
     }
   });
 
-  const c2 = document.getElementById('forexChart');
-  if (c2) new Chart(c2, {
+  _mkC('forexChart', {
     type: 'line',
     data: {
       labels: ['Feb 27','Mar 1','Mar 4','Mar 7','Mar 10','Mar 13','Mar 14','Mar 18'],
@@ -3695,7 +3701,7 @@ function makeNewMarketCharts() {
         { label:'Import Cover (months)', data:[10.8,10.7,10.6,10.5,10.4,10.3,10.4,10.3], borderColor:'#27AE60', tension:0.3, fill:false, pointRadius:3, borderDash:[4,2], yAxisID:'y2' }
       ]
     },
-    options: { responsive:true, maintainAspectRatio:false,
+    options: { responsive:true, maintainAspectRatio:false, animation:false,
       plugins:{ legend:{labels:{boxWidth:10,font:{size:9}}} },
       scales:{
         y:{ position:'left', min:595, ticks:{callback:v=>'$'+v+'B'}, grid:{color:'#F0EDE8'} },
@@ -4496,6 +4502,64 @@ function _renderGeoNews(panelId, articles) {
   panel.style.display = 'block';
 }
 
+// ── LIVE CRISIS TIMELINE ──
+// Fetches post-March-18 GDELT news and appends new timeline events.
+// The hardcoded HTML events (Feb 28–Mar 18) are left intact as the verified archive.
+async function updateTimeline() {
+  const container = document.getElementById('timeline-container');
+  if (!container) return;
+
+  // Remove any previously-added live events (avoid duplication on refresh)
+  container.querySelectorAll('.timeline-event[data-live]').forEach(el => el.remove());
+
+  const articles = await _fetchGDELTArticles(
+    'India Iran Hormuz blockade crude oil energy crisis', 8
+  );
+  if (!articles || articles.length === 0) return;
+
+  // Filter to only articles with a parseable date after March 18, 2026
+  const cutoff = new Date('2026-03-18T00:00:00Z');
+  const items = articles
+    .map(a => {
+      let date = null;
+      if (a.seendate) {
+        try { date = new Date(a.seendate.replace(/^(\d{4})(\d{2})(\d{2}).*/, '$1-$2-$3')); } catch {}
+      }
+      return { ...a, _date: date };
+    })
+    .filter(a => a._date && a._date > cutoff)
+    .sort((a, b) => b._date - a._date);
+
+  if (items.length === 0) return;
+
+  // Build timeline event HTML for each article
+  const fmtDate = d => d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+  const newHTML = items.map(a => {
+    const safeUrl = /^https?:\/\//.test(a.url) ? a.url : null;
+    const title = (a.title || '').slice(0, 90) + ((a.title || '').length > 90 ? '…' : '');
+    const src   = a.domain || a.sourcecountry || '';
+    return `<div class="timeline-event high" data-live="1">
+      <div class="date">${fmtDate(a._date)}</div>
+      <div class="title">${title}</div>
+      <div class="body">${src}${safeUrl ? ` — <a href="${safeUrl}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">Read →</a>` : ''}</div>
+    </div>`;
+  }).join('');
+
+  // Append a divider then the live events, before the existing last event
+  const divider = document.createElement('div');
+  divider.setAttribute('data-live', '1');
+  divider.style.cssText = 'display:flex;align-items:center;gap:8px;margin:14px 0 10px';
+  divider.innerHTML = `<div style="flex:1;height:1px;background:var(--border)"></div>
+    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#27AE60;white-space:nowrap">● Live — Since Mar 18</span>
+    <div style="flex:1;height:1px;background:var(--border)"></div>`;
+  container.appendChild(divider);
+
+  const wrapper = document.createElement('div');
+  wrapper.setAttribute('data-live', '1');
+  wrapper.innerHTML = newHTML;
+  container.appendChild(wrapper);
+}
+
 function _applyLivePriceOverlays() {
   const m3brent = document.getElementById('map3-brent');
   if (m3brent && BASE.brent) m3brent.textContent = `$${BASE.brent.toFixed(0)}/bbl`;
@@ -4661,6 +4725,7 @@ async function fetchAndApplyLiveData() {
     _updateDayCounter();
     _updateKpiFreshness();
     _applyLivePriceOverlays();
+    updateTimeline();
 
     const gotAll = nifty && inr && brent && vix;
     const now = new Date();
