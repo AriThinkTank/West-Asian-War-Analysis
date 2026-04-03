@@ -751,6 +751,57 @@
   /* fade-in on load */
   .fade-in { animation: fadeIn 0.4s ease both; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  /* ── LIVE STATEMENTS FEED ── */
+  .live-feed-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 6px;
+  }
+  .live-feed-title {
+    font-size: 13px; font-weight: 700; color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .live-feed-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #27AE60; flex-shrink: 0; animation: blink 1.5s infinite;
+  }
+  .live-feed-status {
+    font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;
+  }
+  .live-stmt-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid #27AE60;
+    border-radius: 8px;
+    padding: 13px 16px;
+    margin-bottom: 9px;
+    transition: box-shadow 0.15s;
+  }
+  .live-stmt-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .live-stmt-inner { display: flex; align-items: flex-start; gap: 10px; }
+  .live-stmt-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .live-stmt-body { flex: 1; min-width: 0; }
+  .live-stmt-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+  .live-stmt-source { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--blue); }
+  .live-stmt-date { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .live-badge { display: inline-block; background: #E8F8F0; color: #1A8449; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .live-stmt-title { font-size: 12px; font-weight: 600; color: var(--ink); line-height: 1.45; margin-bottom: 4px; }
+  .live-stmt-desc { font-size: 11px; color: #555; line-height: 1.55; }
+  .live-stmt-link { display: inline-block; margin-top: 7px; font-size: 10px; color: var(--blue); text-decoration: none; }
+  .live-stmt-link:hover { text-decoration: underline; }
+  .archive-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 22px 0 14px;
+  }
+  .archive-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .archive-divider-label {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap;
+  }
+  .live-feed-empty {
+    background: #F7F5F0; border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
 </style>
 </head>
 <body>
@@ -774,7 +825,7 @@
 <!-- CRISIS BANNER -->
 <div class="crisis-banner">
   <strong>⚡ LIVE:</strong>
-  Day&nbsp;19 of Hormuz Blockade &nbsp;|&nbsp;
+  <span id="banner-day">Day&nbsp;19</span> of Hormuz Blockade &nbsp;|&nbsp;
   Brent Crude: <strong id="banner-oil">$102.77</strong> &nbsp;|&nbsp;
   USD/INR: <strong id="banner-inr">₹92.56</strong> &nbsp;|&nbsp;
   Nifty: <strong id="banner-nifty">23,151</strong> (–2.06%) &nbsp;|&nbsp;
@@ -2084,6 +2135,27 @@
     <div class="chart-card"><h3>Statement Count by Institutional Wing</h3><div class="chart-wrap tall"><canvas id="wingCountChart"></canvas></div></div>
   </div>
 
+  <!-- ══ LIVE STATEMENTS FEED ══ -->
+  <div id="live-stmts-section" style="margin-bottom:20px">
+    <div class="live-feed-header">
+      <div class="live-feed-title">
+        <span class="live-feed-dot"></span>
+        Live Feed — PIB &amp; MEA Official Releases
+      </div>
+      <span id="live-stmts-status" class="live-feed-status">Fetching official releases…</span>
+    </div>
+    <div id="live-stmts-container">
+      <div class="live-feed-empty">Loading releases from Press Information Bureau (pib.gov.in) and Ministry of External Affairs (mea.gov.in)…</div>
+    </div>
+  </div>
+
+  <!-- Archive divider -->
+  <div class="archive-divider">
+    <div class="archive-divider-line"></div>
+    <span class="archive-divider-label">📁 Crisis Archive — 28 Feb to 18 Mar 2026</span>
+    <div class="archive-divider-line"></div>
+  </div>
+
   <div class="stmt-filter-bar">
     <label>Filter by Wing:</label>
     <button class="filter-btn active" onclick="filterStmts('all',this)">All Wings</button>
@@ -2436,6 +2508,9 @@ const BASE = {
   brent: 102.77, inr: 92.56, nifty: 23151, vix: 19.91,
   lpg: 913, fii: -54000, cpi: 3.21, wpi: 2.13
 };
+
+// Live market data cache (populated on page load / refresh)
+let _liveMarketData = null;
 
 function jitter(v, pct=0.005) {
   return (v * (1 + (Math.random()-0.5)*pct*2)).toFixed(2);
@@ -2803,6 +2878,9 @@ function makeCharts() {
       scales:{y:{min:2,ticks:{callback:v=>v+'%'},grid:{color:'#F0EDE8'}},x:{grid:{display:false}}}
     }
   });
+
+  // Apply live data if already fetched (e.g., charts re-initialised after fetch completes)
+  if (_liveMarketData) _applyToCharts();
 }
 
 // ── TAB SWITCHING ──
@@ -2825,18 +2903,17 @@ function lazyInitTab(id) {
   else if (id === 'sectors') { makeLpgCharts(); }
   else if (id === 'complexity') { makeCharts(); }
   else if (id === 'projections') { makeCharts(); }
-  else if (id === 'statements') { makeStmtCharts(); }
+  else if (id === 'statements') { makeStmtCharts(); fetchOfficialStatements(); }
 }
 
 // ── REFRESH ──
 function refreshDashboard(btn) {
   btn.classList.add('spinning');
-  updateBanner();
-  setTimeout(()=>{
+  Promise.all([fetchAndApplyLiveData(), fetchOfficialStatements()]).finally(() => {
     makeCharts();
     makeStmtCharts();
     btn.classList.remove('spinning');
-  }, 800);
+  });
 }
 
 
@@ -3421,11 +3498,16 @@ function initLeafletMaps() {
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   updateBanner();
+  _updateDayCounter();
   // Only init charts for the initially visible tab (overview)
   // Other tabs lazy-init on first visit via lazyInitTab()
   makeCharts();
   updateOilImpact(103);
   initLeafletMaps();
+  // Fetch live market data from Yahoo Finance
+  fetchAndApplyLiveData();
+  // Pre-fetch official statements so they're ready when the tab is opened
+  fetchOfficialStatements();
 
   // Restore tab from URL hash
   const hash = location.hash.replace('#','');
@@ -3457,8 +3539,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  // Auto-refresh every 5 minutes
-  setInterval(()=>{ updateBanner(); makeCharts(); }, 300000);
+  // Auto-refresh every 5 minutes — fetch live data and official statements
+  setInterval(() => { fetchAndApplyLiveData(); fetchOfficialStatements(); }, 300000);
 });
 
 // ── STATEMENTS TAB ──
@@ -3688,6 +3770,260 @@ function updateScenProbs() {
   document.getElementById('wINR').textContent = '₹' + wINR.toFixed(1);
   document.getElementById('wCPI').textContent = wCPI.toFixed(1) + '%';
   document.getElementById('wNifty').textContent = Math.round(wNifty).toLocaleString('en-IN');
+}
+
+// ── OFFICIAL STATEMENTS LIVE FEED ──
+// Sources: PIB (Press Information Bureau) — pib.gov.in — official Government of India releases
+const _PIB_FEEDS = [
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3',  name: 'PIB · Ministry of External Affairs', icon: '🏛️', wing: 'mea' },
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=2&Lang=1&Regid=3',  name: "PIB · Prime Minister's Office",        icon: '🤝', wing: 'pm'  },
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=47&Lang=1&Regid=3', name: 'PIB · Ministry of Petroleum & Gas',   icon: '⚡', wing: 'min' },
+  { url: 'https://pib.gov.in/RssMain.aspx?ModId=8&Lang=1&Regid=3',  name: 'PIB · Ministry of Finance',           icon: '💰', wing: 'min' },
+];
+
+// Keywords for filtering Iran/Hormuz-relevant releases
+const _STMT_KEYWORDS = [
+  'iran', 'hormuz', 'blockade', 'strait', 'crude oil', 'lpg', 'liquefied petroleum',
+  'energy security', 'gulf', 'oil tanker', 'araghchi', 'pezeshkian', 'middle east',
+  'west asia', 'persian gulf', 'sanctions', 'oil price', 'petroleum import',
+  'brent', 'shipping', 'tanker', 'natural gas', 'remittance', 'diaspora', 'jaishankar',
+];
+
+async function _fetchPIBFeed(feedInfo) {
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(feedInfo.url)}`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const resp = await fetch(proxy, { signal: ctrl.signal });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const json = await resp.json();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(json.contents || '', 'text/xml');
+    const parseErr = doc.querySelector('parsererror');
+    if (parseErr) throw new Error('RSS parse error');
+    return Array.from(doc.querySelectorAll('item')).map(item => {
+      const raw = item.querySelector('description')?.textContent?.trim() || '';
+      // Strip any residual HTML tags from description
+      const tmp = document.createElement('div');
+      tmp.innerHTML = raw;
+      const cleanDesc = tmp.textContent?.trim() || '';
+      const pubDateStr = item.querySelector('pubDate')?.textContent?.trim() || '';
+      const link = item.querySelector('link')?.textContent?.trim() ||
+                   item.querySelector('guid')?.textContent?.trim() || feedInfo.url;
+      return {
+        title: item.querySelector('title')?.textContent?.trim() || '(Untitled)',
+        link,
+        date: pubDateStr ? new Date(pubDateStr) : new Date(0),
+        description: cleanDesc,
+        source: feedInfo.name,
+        icon:   feedInfo.icon,
+        wing:   feedInfo.wing,
+      };
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function _isHormuzRelevant(item) {
+  const text = (item.title + ' ' + item.description).toLowerCase();
+  return _STMT_KEYWORDS.some(kw => text.includes(kw));
+}
+
+function _buildLiveCard(item) {
+  const isValidDate = item.date instanceof Date && !isNaN(item.date) && item.date.getTime() > 0;
+  const dateStr = isValidDate
+    ? item.date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+    : 'Recent';
+  const desc = item.description
+    ? (item.description.length > 320 ? item.description.slice(0, 317) + '\u2026' : item.description)
+    : '';
+  // Sanitise link (allow only https pib.gov.in / mea.gov.in / pmo URLs)
+  const safeLink = /^https:\/\/(pib\.gov\.in|www\.mea\.gov\.in|www\.pmindia\.gov\.in|petroleum\.nic\.in|finmin\.nic\.in)/.test(item.link)
+    ? item.link : '';
+  const srcShort = item.source.split('\u00b7')[0].trim(); // "PIB " part
+  return `<div class="live-stmt-card" data-wing="${item.wing}">
+  <div class="live-stmt-inner">
+    <span class="live-stmt-icon">${item.icon}</span>
+    <div class="live-stmt-body">
+      <div class="live-stmt-meta">
+        <span class="live-stmt-source">${item.source}</span>
+        <span class="live-stmt-date">${dateStr}</span>
+        <span class="live-badge">&#128308; Live</span>
+      </div>
+      <div class="live-stmt-title">${item.title}</div>
+      ${desc ? `<div class="live-stmt-desc">${desc}</div>` : ''}
+      ${safeLink ? `<a class="live-stmt-link" href="${safeLink}" target="_blank" rel="noopener noreferrer">\u2197 Read full release on ${srcShort}</a>` : ''}
+    </div>
+  </div>
+</div>`;
+}
+
+async function fetchOfficialStatements() {
+  const container = document.getElementById('live-stmts-container');
+  const status    = document.getElementById('live-stmts-status');
+  if (!container) return;
+
+  const results = await Promise.allSettled(_PIB_FEEDS.map(f => _fetchPIBFeed(f)));
+
+  let allItems = [];
+  let successCount = 0;
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') {
+      allItems = allItems.concat(r.value);
+      successCount++;
+    } else {
+      console.warn('[PIB feed]', _PIB_FEEDS[i].name, r.reason?.message || r.reason);
+    }
+  });
+
+  if (successCount === 0) {
+    container.innerHTML = `<div class="live-feed-empty">
+      <strong>Could not reach PIB feeds.</strong> Official releases from the Press Information Bureau (pib.gov.in) will appear here automatically when the connection is available. The Crisis Archive below contains all 24 verified statements from 28\u00a0Feb\u2013\u202618\u00a0Mar 2026.
+    </div>`;
+    if (status) status.textContent = '\u26A0 PIB unreachable \u2014 using archive data';
+    return;
+  }
+
+  // Filter for Hormuz/Iran relevance and sort newest-first
+  const relevant = allItems
+    .filter(_isHormuzRelevant)
+    .sort((a, b) => b.date - a.date);
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+  if (relevant.length === 0) {
+    container.innerHTML = `<div class="live-feed-empty">
+      <strong>No new Iran/Hormuz-related releases found</strong> across ${successCount} official PIB feed(s).
+      New official statements from MEA, PMO, and the Petroleum Ministry on Iran/Hormuz/energy security will appear here automatically.
+      Checked: ${timeStr}.
+    </div>`;
+    if (status) status.textContent = `${successCount} feed(s) checked \u00b7 No new Iran/energy releases \u00b7 ${timeStr}`;
+  } else {
+    container.innerHTML = relevant.map(_buildLiveCard).join('');
+    if (status) status.textContent = `${relevant.length} relevant release(s) found \u00b7 ${successCount} feed(s) \u00b7 Updated ${timeStr}`;
+    // Update the "Statements Tracked" KPI tile
+    const kpiTiles = document.querySelectorAll('#tab-statements .kpi-tile .kpi-val');
+    if (kpiTiles[0]) kpiTiles[0].textContent = 24 + relevant.length;
+  }
+}
+
+// ── LIVE MARKET DATA ──
+const _CRISIS_ORIGIN = new Date('2026-02-28'); // first day of crisis response
+const _BLOCKADE_DATE = new Date('2026-03-01'); // effective blockade start
+
+async function _fetchYahoo(symbol) {
+  const p1 = Math.floor(_CRISIS_ORIGIN.getTime() / 1000);
+  const p2 = Math.floor(Date.now() / 1000);
+  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${p1}&period2=${p2}&interval=1d`;
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const resp = await fetch(proxy, { signal: ctrl.signal });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const json = await resp.json();
+    const parsed = JSON.parse(json.contents);
+    const r = parsed.chart?.result?.[0];
+    if (!r) throw new Error('No chart result for ' + symbol);
+    const ts = r.timestamp;
+    const cls = r.indicators.quote[0].close;
+    return ts
+      .map((t, i) => ({ date: new Date(t * 1000), value: cls[i] }))
+      .filter(d => d.value != null && !isNaN(d.value));
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function _fmtDate(d) {
+  const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return M[d.getMonth()] + ' ' + d.getDate();
+}
+
+function _applyToCharts() {
+  const d = _liveMarketData;
+  if (!d) return;
+  const _upd = (key, series) => {
+    const ch = charts[key];
+    if (!ch || !series || !series.length) return;
+    ch.data.labels = series.map(p => _fmtDate(p.date));
+    ch.data.datasets[0].data = series.map(p => +p.value.toFixed(2));
+    if (key === 'nifty') {
+      const vals = ch.data.datasets[0].data;
+      const minV = Math.min(...vals);
+      ch.data.datasets[0].pointBackgroundColor = vals.map(v => v === minV ? '#C0392B' : '#2471A3');
+      ch.data.datasets[0].pointRadius = vals.map(v => v === minV ? 6 : 3);
+    }
+    ch.update('none');
+  };
+  _upd('nifty', d.nifty);
+  _upd('inr',   d.inr);
+  _upd('brent', d.brent);
+  _upd('vix',   d.vix);
+  // Anchor scenario Day 0 to latest real-world values
+  const curB = d.brent.length ? d.brent[d.brent.length - 1].value : null;
+  const curI = d.inr.length   ? d.inr[d.inr.length - 1].value     : null;
+  if (charts.oilScen && curB != null) {
+    charts.oilScen.data.datasets.forEach(ds => { ds.data[0] = +curB.toFixed(0); });
+    charts.oilScen.update('none');
+  }
+  if (charts.inrScen && curI != null) {
+    charts.inrScen.data.datasets.forEach(ds => { ds.data[0] = +curI.toFixed(1); });
+    charts.inrScen.update('none');
+  }
+}
+
+function _updateDayCounter() {
+  const el = document.getElementById('banner-day');
+  if (!el) return;
+  const now = new Date();
+  const days = Math.max(19, Math.floor((now - _BLOCKADE_DATE) / 86400000) + 1);
+  el.textContent = 'Day\u00a0' + days;
+}
+
+function _updateKpiFreshness() {
+  const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  document.querySelectorAll('.kpi-freshness').forEach(el => {
+    const t = el.textContent;
+    if (t.includes('ICE') || t.includes('RBI') || t.includes('NSE')) {
+      el.textContent = '\uD83D\uDCC5 Live \u00b7 ' + today;
+    }
+  });
+}
+
+async function fetchAndApplyLiveData() {
+  const lu = document.getElementById('last-updated');
+  const prevText = lu ? lu.textContent : '';
+  if (lu) lu.textContent = 'Fetching live data\u2026';
+  try {
+    const [nifty, inr, brent, vix] = await Promise.all([
+      _fetchYahoo('^NSEI'),
+      _fetchYahoo('USDINR=X'),
+      _fetchYahoo('BZ=F'),
+      _fetchYahoo('^INDIAVIX'),
+    ]);
+    _liveMarketData = { nifty, inr, brent, vix };
+    // Update BASE so subsequent updateBanner() calls use real values
+    if (brent.length) BASE.brent = +brent[brent.length - 1].value.toFixed(2);
+    if (inr.length)   BASE.inr   = +inr[inr.length - 1].value.toFixed(2);
+    if (nifty.length) BASE.nifty = Math.round(nifty[nifty.length - 1].value);
+    if (vix.length)   BASE.vix   = +vix[vix.length - 1].value.toFixed(2);
+    _applyToCharts();
+    updateBanner();
+    _updateDayCounter();
+    _updateKpiFreshness();
+    const now = new Date();
+    if (lu) lu.textContent = '\uD83D\uDFE2 Live \u00b7 ' +
+      now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' ' +
+      now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  } catch (err) {
+    console.warn('[fetchAndApplyLiveData]', err.message);
+    if (lu) lu.textContent = prevText || '\u26A0 Live data unavailable';
+    updateBanner();
+    _updateDayCounter();
+  }
 }
 
 // ── SOURCE TOOLTIP SYSTEM ──
