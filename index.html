@@ -3955,10 +3955,10 @@ function lazyInitTab(id) {
   else if (id === 'ai') { makeAICharts(); }
   else if (id === 'startups') { makeStartupsCharts(); }
   else if (id === 'diaspora') { makeDiasporaCharts(); }
-  else if (id === 'energy')      { makeCharts(); _applyDataFreshnessBadges(); fetchPPACFuelPrices(); }
-  else if (id === 'traderoutes') { makeCharts(); _applyDataFreshnessBadges(); }
-  else if (id === 'rbi')         { makeCharts(); _applyDataFreshnessBadges(); }
-  else if (id === 'history')     { makeCharts(); _applyDataFreshnessBadges(); }
+  else if (id === 'energy')      { makeEnergyCharts(); _applyDataFreshnessBadges(); fetchPPACFuelPrices(); }
+  else if (id === 'traderoutes') { makeTradeRoutesCharts(); _applyDataFreshnessBadges(); }
+  else if (id === 'rbi')         { makeRbiCharts(); _applyDataFreshnessBadges(); }
+  else if (id === 'history')     { makeHistoryCharts(); _applyDataFreshnessBadges(); }
 }
 
 // ── REFRESH ──
@@ -4876,6 +4876,7 @@ function makeStmtCharts() {
   const curEl = document.getElementById('esc-current-val');
   if (curEl) curEl.textContent = lastEsc.toFixed(1);
 
+function makeEnergyCharts() {
   // ── FUEL CITY CHART (Energy Security tab) ──
   charts.fuelCity = _mkC('fuelCityChart', {
     type: 'bar',
@@ -4963,6 +4964,9 @@ function makeStmtCharts() {
     }
   });
 
+}
+
+function makeTradeRoutesCharts() {
   // ── IMPORT MIX CHART (Trade Routes tab) ──
   charts.importMix = _mkC('importMixChart', {
     type: 'bar',
@@ -5065,6 +5069,9 @@ function makeStmtCharts() {
     }
   });
 
+}
+
+function makeRbiCharts() {
   // ── RBI FOREX RESERVES CHART ──
   charts.rbiForex = _mkC('rbiForexChart', {
     type: 'line',
@@ -5159,6 +5166,9 @@ function makeStmtCharts() {
     }
   });
 
+}
+
+function makeHistoryCharts() {
   // ── HISTORICAL OIL INDEX CHART ──
   const histDays = ['Day 0','Day 5','Day 10','Day 15','Day 20','Day 30','Day 45','Day 60','Day 90','Day 120','Day 150'];
   charts.histOil = _mkC('histOilChart', {
@@ -5228,6 +5238,7 @@ function makeStmtCharts() {
       }
     }
   });
+}
 
 // ── SCENARIO PROBABILITY SLIDERS ──
 function updateScenProbs() {
